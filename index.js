@@ -26,7 +26,7 @@ const qrCode_r = require('qrcode-reader');
 // Connect the client to the server	(optional starting in v4.7)
 client.connect();
 // Send a ping to confirm a successful connection
-const user = client.db("Visitor_Managment_v1").collection("users")
+const user = client.db("Visitor_Management_v1").collection("users")
 
 
 const app = express()
@@ -48,13 +48,13 @@ app.get('/verify', verifyToken, (req, res) => {
 
   })
 
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
     let data = req.body
     // res.send(' Post request '+ JSON.stringify(data));
     //res.send(' Post request '+ data.name +data.password)
     //res.send(login(data.username,data.password));
-    const loginuser = login(data.username, data.password);
-    res.send(generateToken(loginuser))
+    const loginuser = await login(data);
+    res.send("Login successful! :D, Welcome " + loginuser.name + "!")
   });
 
 app.post('/register',(req, res)=>{
@@ -70,13 +70,13 @@ app.post('/register',(req, res)=>{
 })
 
 
-function login(loginuser, loginpassword) {
-  console.log("Alert! Alert! Someone is logging in!", loginuser, loginpassword) //Display message to ensure function is called
-  const user = client.db("Visitor_Managment_v1").collection("users")
+async function login(login) {
+  console.log("Alert! Alert! Someone is logging in!") //Display message to ensure function is called
   //Verify username is in the database
-  const verify = dbUsers.find (user =>user.username == loginuser && user.password == loginpassword);
+  console.log(login)
+  const verify = await user.find(login).next();
     if (verify){
-      return(user);
+      return(verify);
     }else {
       return({error: "User not found"});
     }
