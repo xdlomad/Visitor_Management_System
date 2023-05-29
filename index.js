@@ -2,7 +2,7 @@ const express = require('express')
 const jwt = require('jsonwebtoken');
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://username:password@firstdatabase.3xnid7z.mongodb.net/?retryWrites=true&w=majority";
+const uri = "mongodb+srv://b022110096:l8y6PQc3ylvAL1oe@firstdatabase.3xnid7z.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -22,15 +22,16 @@ const jimp = require("jimp");
 const fs = require('fs')
 const qrCode_r = require('qrcode-reader');
 
-
 // Connect the client to the server	(optional starting in v4.7)
 client.connect();
 // Send a ping to confirm a successful connection
 const user = client.db("Visitor_Management_v1").collection("users")
+const visitor = client.db("Visitor_Management_v1").collection("visitor")
+const visitor_log = client.db("Visitor_Management_v1").collection("visitor_log")
 
 
 const app = express()
-const port = 2000
+const port = 3000
 
 //Database of users
 app.use(express.json());
@@ -48,56 +49,62 @@ app.get('/verify', verifyToken, (req, res) => {
 
   })
 
-app.post('/login', async (req, res) => {
+app.get('/login', async (req, res) => {
     let data = req.body
-    // res.send(' Post request '+ JSON.stringify(data));
-    //res.send(' Post request '+ data.name +data.password)
-    //res.send(login(data.username,data.password));
     const loginuser = await login(data);
-    res.send("Login successful! :D, Welcome " + loginuser.name + "!")
+    if (loginuser) {
+    res.write(loginuser.user_id + " has logged in!")
+    res.end("\nWelcome "+ loginuser.name + "!")
+    }else {
+      res.send("Wrong user id or password inputed D:")
+    }
   });
 
-app.post('/register',(req, res)=>{
+app.post('/registeruser', async (req, res)=>{
   let data = req.body
-  res.send(
-    register(
-      data.username,
-      data.password,
-      data.name,
-      data.email
-    )
-  )
-})
+  if (data.currentrole == "security" || data.currentrole == "resident"){
+    res.send("you do not have access to registering users!")
+  }else if (data.currentrole == "admin" ){
+    const lmao = await registerUser(data)
+    if (lmao){
+      res.send("Registration request processed, new user is " + lmao.name)
+    }else{
+      res.send("Error! User already exists!")
+    }
+  }else {
+      res.send("Error! Please enter a valid role!")
+    }
+  }
+)
 
 
-async function login(login) {
+async function login(data) {
   console.log("Alert! Alert! Someone is logging in!") //Display message to ensure function is called
   //Verify username is in the database
-  console.log(login)
-  const verify = await user.find(login).next();
-    if (verify){
-      return(verify);
-    }else {
-      return({error: "User not found"});
+  let verify = await user.find(data).next();
+  if (verify){
+    return(verify);
+  }else {
+    return
     }
-    }
+  }
 
-function register(newusername, newpassword, newname, newemail) {
+async function registerUser(newdata) {
   //verify if username is already in databse
-  let match = dbUsers.find(element => 
-    element.username == newusername
-      )
+  const match = await user.find({user_id : newdata.user_id}).next()
     if (match) {
-      return ( "Error! username is already taken :D")
+      return 
     } else {
       // add info into database
-      dbUsers.push({
-      username : newusername,
-      password : newpassword,
-      name : newname,
-      email : newemail
+      await user.insertOne({
+        "user_id": newdata.user_id,
+        "password": newdata.password,
+        "name": newdata.name,
+        "unit": newdata.unit,
+        "hp_num" : newdata.hp_num,
+        "role" : newdata.role
       })
-          return ( "Registration successful! :D" )
+          return (newdata)
       }  
   }
 
