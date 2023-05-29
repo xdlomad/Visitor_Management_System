@@ -24,6 +24,7 @@ const qrCode_r = require('qrcode-reader');
 
 // Connect the client to the server	(optional starting in v4.7)
 client.connect();
+
 // Send a ping to confirm a successful connection
 const user = client.db("Visitor_Management_v1").collection("users")
 const visitor = client.db("Visitor_Management_v1").collection("visitor")
