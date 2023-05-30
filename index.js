@@ -27,7 +27,7 @@ client.connect();
 
 // Send a ping to confirm a successful connection
 const user = client.db("Visitor_Management_v1").collection("users")
-const visitor = client.db("Visitor_Management_v1").collection("visitor")
+const visitor = client.db("Visitor_Management_v1").collection("visitors")
 const visitor_log = client.db("Visitor_Management_v1").collection("visitor_log")
 
 
@@ -41,13 +41,8 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
 
-app.get('/hello', (req, res) => {
-  res.send("hello world")
-})
-
 app.get('/verify', verifyToken, (req, res) => {
     console.log(req.user)
-
   })
 
 app.get('/login', async (req, res) => {
@@ -60,6 +55,7 @@ app.get('/login', async (req, res) => {
       res.send("Wrong user id or password inputed D:")
     }
   });
+
 
 app.post('/registeruser', async (req, res)=>{
   let data = req.body
@@ -78,7 +74,39 @@ app.post('/registeruser', async (req, res)=>{
   }
 )
 
+app.post('/registervisitor', async (req, res)=>{
+  let data = req.body
+  const lmao = await registerVisitor(data)
+    if (lmao){
+      res.send("Registration request processed, visitor is " + lmao.name)
+    }else{
+      res.send("Error! Visitor already exists!, Add a visit log instead!")
+    }
+  }
+)
 
+app.get('/createQRvisitor', async (req, res)=>{
+  let data = req.body
+  const lmao = await qrCreate(data)
+    if (lmao){
+      res.send("QR code created for visitor! " + lmao)
+    }else{
+      res.send("No such visitor found")
+    }
+  }
+)
+
+app.get('/readQRvisitor', async (req, res)=>{
+  let data = req.body
+  const visitorInfo = await qrRead(data)
+    if (visitorInfo){
+      res.write("Visitor: ")
+      res.end(visitorInfo)
+    }else{
+      res.send("QR code undefined")
+    }
+  }
+)
 async function login(data) {
   console.log("Alert! Alert! Someone is logging in!") //Display message to ensure function is called
   //Verify username is in the database
@@ -109,6 +137,29 @@ async function registerUser(newdata) {
       }  
   }
 
+async function registerVisitor(newdata) {
+  //verify if username is already in databse
+  const match = await visitor.find({"ref_num": newdata.ref}).next()
+    if (match) {
+      return 
+    } else {
+      // add info into database
+      await visitor.insertOne({
+        "ref_num" : newdata.ref,
+        "name": newdata.name,
+        "IC_num": newdata.IC_num,
+        "car_num": newdata.car_num,
+        "hp" : newdata.hp_num,
+        "pass": newdata.pass,
+        "category" : newdata.category,
+        "visit_date" : newdata.date,
+        "unit" : newdata.unit,
+        "user_id" : newdata.user_id
+      })
+          return (newdata)
+    }  
+}
+
   function generateToken(loginProfile){
     return jwt.sign(loginProfile, 'very_long_long_long_long_numbers_alphabets_lmao_stillgoing_password', { expiresIn: '1h' });
   }
@@ -129,29 +180,45 @@ async function registerUser(newdata) {
 
 
   //function to read qrcode file
-async function qrRead(filename) {
+async function qrRead(data) {
   //read the file
-  const buffer = await fs.readFileSync('./' + filename);
+  const buffer = await fs.readFileSync('./' + data.file);
   //read the buffer
   const image = await jimp.read(buffer);
   // Creating an instance of qrcode-reader module
   const qr = new qrCode_r();
   //wait for promise to resolve
-  const value = await new Promise((resolve, reject) => {
-    qr.callback = (err, v) => err != null ? reject(err) : resolve(v);
-    qr.decode(image.bitmap);
-  });
-  //parse the result
-  const final = JSON.parse(value.result)
-  return final
+  final =""
+  qr.callback = function (err, value) {
+    if (err) {
+        console.error(err);
+    }
+    // Let result equal final
+    final = value.result
+  };
+  // Decoding the QR code
+  qr.decode(image.bitmap);
+  //return the read data
+  if (final){
+    return final
+  }else {
+    return
+  }
 }
 
 //function to create qrcode file
-function qrCreate(data){
-let stringdata = JSON.stringify(data)
-//create the file
-qrCode_c.toFile(path.join('./identification.png'), stringdata, (err)=>{
-  if (err) throw err;
-});
+async function qrCreate(data){
+  console.log(data.IC_num)
+  visitorData = await visitor.find({"IC_num" : data.IC_num}, {projection : {"ref_num" : 1 , "name" : 1 , "category" : 1 , "hp" : 1, "_id" : 0}}).next()
+  if(visitorData){
+    let stringdata = JSON.stringify(visitorData)
+    //create the file
+    qrCode_c.toFile(path.join('./visitorPass.png'), stringdata, (err)=>{
+      if (err) throw err;
+    });
+    return ("visitorPass.png")
+}else{
+  return
 }
+  }
 

@@ -26,3 +26,37 @@ Content-Type: application/json
     "role" : "resident",
     "currentrole" : "admin"
 }
+
+###
+POST http://localhost:3000/registervisitor
+Content-Type: application/json 
+
+{
+    "ref" : "672831021",
+    "name": "Megaman",
+    "IC_num": "220131-07-4531",
+    "car_num": "UTeM 1234",
+    "hp_num" : "012-2131231",
+    "pass": "VISITOR-0A",
+    "category" : "VISITOR",
+    "date" : "2023-06-21",
+    "unit" : "T-3-1",
+    "user_id" : "R0711"
+}
+
+###
+GET http://localhost:3000/createQRvisitor
+Content-Type: application/json 
+
+{ 
+    "IC_num": "220131-07-4531"
+}
+
+###
+GET http://localhost:3000/readQRvisitor
+Content-Type: application/json 
+
+{ 
+    "file": "visitorPass.png"
+}
+
