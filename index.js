@@ -21,6 +21,7 @@ const path = require('path');
 const jimp = require("jimp");
 const fs = require('fs')
 const qrCode_r = require('qrcode-reader');
+const { send } = require('process');
 
 // Connect the client to the server	(optional starting in v4.7)
 client.connect();
@@ -28,7 +29,7 @@ client.connect();
 // Send a ping to confirm a successful connection
 const user = client.db("Visitor_Management_v1").collection("users")
 const visitor = client.db("Visitor_Management_v1").collection("visitors")
-const visitor_log = client.db("Visitor_Management_v1").collection("visitor_log")
+const visitorLog = client.db("Visitor_Management_v1").collection("visitor_log")
 
 
 const app = express()
@@ -55,7 +56,6 @@ app.get('/login', async (req, res) => {
       res.send("Wrong user id or password inputed D:")
     }
   });
-
 
 app.post('/registeruser', async (req, res)=>{
   let data = req.body
@@ -100,13 +100,47 @@ app.get('/readQRvisitor', async (req, res)=>{
   let data = req.body
   const visitorInfo = await qrRead(data)
     if (visitorInfo){
-      res.write("Visitor: ")
-      res.end(visitorInfo)
+      res.send({message : "Visitor info :",visitorInfo})
     }else{
       res.send("QR code undefined")
     }
   }
 )
+
+//create a visitor log
+app.post('/checkIn', async (req, res)=>{
+  let data = req.body
+  if (data.currentrole == "security" || data.currentrole == "admin"){
+    const logData = await createLog(data)
+    if (logData){
+      res.send({message : "Visitor Log Created!",logData})
+    }else{
+      res.send("Error! Log already exist!")
+    }
+  }else if (data.currentrole == "resident" ){
+    res,send("You do not have access to create visitor logs!")
+  }else{
+    res.send("Error! Please enter a valid role!")
+    }
+  })
+
+//update a visitor log to checkout visitor
+app.patch('/checkOut', async (req, res)=>{
+  let data = req.body
+  if (data.currentrole == "security" || data.currentrole == "admin"){
+    const logData = await updateLog(data)
+    if (logData){
+      res.send({message : "Visitor succesfully checkout",logData})
+    }else{
+      res.send("Error! Could not find log :[")
+    }
+  }else if (data.currentrole == "resident" ){
+    res,send("You do not have access to update visitor logs!")
+  }else{
+    res.send("Error! Please enter a valid role!")
+    }
+  })
+
 async function login(data) {
   console.log("Alert! Alert! Someone is logging in!") //Display message to ensure function is called
   //Verify username is in the database
@@ -160,24 +194,25 @@ async function registerVisitor(newdata) {
     }  
 }
 
-  function generateToken(loginProfile){
-    return jwt.sign(loginProfile, 'very_long_long_long_long_numbers_alphabets_lmao_stillgoing_password', { expiresIn: '1h' });
-  }
-
-  function verifyToken(req, res, next){
-    //let token = req.headers['authorization'].split(' ')[1];
-    let header = req.headers.authorization
-    let token = header.split(' ')[1]
-    jwt.verify(token,'very_long_long_long_long_numbers_alphabets_lmao_stillgoing_password',function(err,decoded){
-      if(err) {
-        res.send("invalid token")
-      }
-      req.user = decoded // bar
-
-      next()
-    });
-  }
-
+async function createLog(newdata) {
+  //verify if username is already in databse
+  const match = await visitorLog.find({"log_id": newdata.log_id}).next()
+    if (match) {
+      return 
+    } else {
+      // add info into database
+      let dateTime = currentTime()
+      const log = 
+      await visitorLog.insertOne({
+        "log_id": newdata.log_id,
+        "ref_num" : newdata.ref,
+        "CheckIn_Time": dateTime,
+        "CheckOut_Time": "",
+        "user_id" : newdata.user_id
+      })
+          return (log)
+    }  
+}
 
   //function to read qrcode file
 async function qrRead(data) {
@@ -200,7 +235,7 @@ async function qrRead(data) {
   qr.decode(image.bitmap);
   //return the read data
   if (final){
-    return final
+    return JSON.parse(final)
   }else {
     return
   }
@@ -222,3 +257,25 @@ async function qrCreate(data){
 }
   }
 
+function currentTime(){
+  const today = new Date().toLocaleString("en-US", {timeZone: "singapore"})
+  return today
+}
+
+function generateToken(loginProfile){
+  return jwt.sign(loginProfile, 'very_long_long_long_long_numbers_alphabets_lmao_stillgoing_password', { expiresIn: '1h' });
+}
+
+function verifyToken(req, res, next){
+  //let token = req.headers['authorization'].split(' ')[1];
+  let header = req.headers.authorization
+  let token = header.split(' ')[1]
+  jwt.verify(token,'very_long_long_long_long_numbers_alphabets_lmao_stillgoing_password',function(err,decoded){
+    if(err) {
+      res.send("invalid token")
+    }
+    req.user = decoded // bar
+
+    next()
+  });
+}
