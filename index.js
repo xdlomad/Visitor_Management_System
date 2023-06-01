@@ -2,7 +2,7 @@ const express = require('express')
 const jwt = require('jsonwebtoken');
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://username:password@firstdatabase.3xnid7z.mongodb.net/?retryWrites=true&w=majority";
+const uri = "mongodb+srv://name:password@firstdatabase.3xnid7z.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -130,7 +130,7 @@ app.patch('/checkOut', async (req, res)=>{
   if (data.currentrole == "security" || data.currentrole == "admin"){
     const logData = await updateLog(data)
     if (logData){
-      res.send({message : "Visitor succesfully checkout",logData})
+      res.send( "Visitor succesfully checkout")
     }else{
       res.send("Error! Could not find log :[")
     }
@@ -211,6 +211,17 @@ async function createLog(newdata) {
         "user_id" : newdata.user_id
       })
           return (log)
+    }  
+}
+
+async function updateLog(newdata) {
+  //verify if username is already in databse
+  let dateTime = currentTime()
+  const newLog = await visitorLog.findOneAndUpdate({"log_id": newdata.log_id},{$set : {CheckOut_Time: dateTime}})
+    if (newLog) {
+      return (newLog)
+    } else {
+          return
     }  
 }
 
