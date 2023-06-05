@@ -2,7 +2,7 @@ const express = require('express')
 const jwt = require('jsonwebtoken');
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://name:password@firstdatabase.3xnid7z.mongodb.net/?retryWrites=true&w=majority";
+const uri = "mongodb+srv://b022110096:l8y6PQc3ylvAL1oe@firstdatabase.3xnid7z.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -46,6 +46,7 @@ app.get('/verify', verifyToken, (req, res) => {
     console.log(req.user)
   })
 
+//login GET request
 app.get('/login', async (req, res) => {
     let data = req.body
     const loginuser = await login(data);
@@ -73,6 +74,24 @@ app.post('/registeruser', async (req, res)=>{
     }
   }
 )
+
+app.post('/deleteuser', async (req, res)=>{
+  let data = req.body
+  if (data.currentrole == "security" || data.currentrole == "resident"){
+    res.send("you do not have access to registering users!")
+  }else if (data.currentrole == "admin" ){
+    const lmao = await deleteUser(data)
+    if (lmao){
+      res.send("user deleted" + lmao.name)
+    }else{
+      res.send("Error! no user found!")
+    }
+  }else {
+      res.send("Error! Please enter a valid role!")
+    }
+  }
+)
+
 
 app.post('/registervisitor', async (req, res)=>{
   let data = req.body
@@ -171,6 +190,17 @@ async function registerUser(newdata) {
       }  
   }
 
+async function deleteUser(newdata) {
+  //verify if username is already in databse
+  const match = await user.find({user_id : newdata.user_id}).next()
+    if (match) {
+      await user.deleteOne({user_id : newdata.user_id})
+      return (newdata)
+    } else {
+      return
+      }  
+  }
+
 async function registerVisitor(newdata) {
   //verify if username is already in databse
   const match = await visitor.find({"ref_num": newdata.ref}).next()
@@ -193,6 +223,7 @@ async function registerVisitor(newdata) {
           return (newdata)
     }  
 }
+
 
 async function createLog(newdata) {
   //verify if username is already in databse
