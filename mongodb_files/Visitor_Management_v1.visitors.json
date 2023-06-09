@@ -1,0 +1,15 @@
+[{
+  "_id": {
+    "$oid": "6475eb1b688a3fd960fc0271"
+  },
+  "ref_num": "672831021",
+  "name": "Megaman",
+  "IC_num": "220131-07-4531",
+  "car_num": "UTeM 1234",
+  "hp": "012-2131231",
+  "pass": "VISITOR-0A",
+  "category": "VISITOR",
+  "visit_date": "2023-06-21",
+  "unit": "T-3-1",
+  "user_id": "R0711"
+}]

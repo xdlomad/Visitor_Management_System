@@ -1,0 +1,33 @@
+[{
+  "_id": {
+    "$oid": "647464667e0e73e21de40c56"
+  },
+  "user_id": "A3100",
+  "password": "lyla",
+  "name": "rocket",
+  "unit": "management",
+  "hp_num": "31232",
+  "role": "admin"
+},
+{
+  "_id": {
+    "$oid": "6478a87052bd234e9122f3c2"
+  },
+  "user_id": "S2203",
+  "password": "stellar",
+  "name": "suisei",
+  "unit": "security",
+  "hp_num": "43165",
+  "role": "security"
+},
+{
+  "_id": {
+    "$oid": "648346e72e31d267c56a3dc2"
+  },
+  "user_id": "R2769",
+  "password": "mudmud",
+  "name": "mudkip",
+  "unit": "T-11-1",
+  "hp_num": "21111",
+  "role": "resident"
+}]

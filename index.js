@@ -49,13 +49,13 @@ app.get('/verify', verifyToken, (req, res) => {
 //login GET request
 app.get('/login', async (req, res) => {
     let data = req.body
-    let loginuser = await login(data);
-    const user = loginuser.verify
-    const token = loginuser.token
-    if (typeof loginuser == "object") {
-      res.write(user.user_id + " has logged in!")
+    let result = await login(data);
+    const loginuser = result.verify
+    const token = result.token
+    if (typeof loginuser == "object") { 
+      res.write(loginuser.user_id + " has logged in!")
       res.write("\nYour token : " + token)
-      res.end("\nWelcome "+ user.name + "!")
+      res.end("\nWelcome "+ loginuser.name + "!")
     }else {
       res.send(loginuser)
     }
@@ -63,10 +63,10 @@ app.get('/login', async (req, res) => {
 
 app.post('/registeruser', verifyToken, async (req, res)=>{
   let authorize = req.user.role
+  let data = req.body
   if (authorize == "security" || authorize == "resident"){
     res.send("you do not have access to registering users!")
   }else if (authorize == "admin" ){
-    let data = req.body
     const lmao = await registerUser(data)
     if (lmao){
       res.send("Registration request processed, new user is " + lmao.name)
@@ -74,16 +74,17 @@ app.post('/registeruser', verifyToken, async (req, res)=>{
       res.send("Error! User already exists!")
     }
   }else {
-      res.send("Error! Please enter a valid role!")
+      res.send("Token not valid!")
     }
   }
 )
 
-app.post('/deleteuser', async (req, res)=>{
+app.post('/deleteuser', verifyToken, async (req, res)=>{
   let data = req.body
-  if (data.currentrole == "security" || data.currentrole == "resident"){
+  let authorize = req.user.role
+  if (authorize == "security" || authorize == "resident"){
     res.send("you do not have access to registering users!")
-  }else if (data.currentrole == "admin" ){
+  }else if (authorize == "admin" ){
     const lmao = await deleteUser(data)
     if (lmao){
       res.send("user deleted" + lmao.name)
@@ -91,7 +92,7 @@ app.post('/deleteuser', async (req, res)=>{
       res.send("Error! no user found!")
     }
   }else {
-      res.send("Error! Please enter a valid role!")
+      res.send("Token not valid!")
     }
   }
 )
@@ -99,11 +100,16 @@ app.post('/deleteuser', async (req, res)=>{
 
 app.post('/registervisitor', async (req, res)=>{
   let data = req.body
+  let authorize = req.user.role
+  if(authorize){
   const lmao = await registerVisitor(data)
     if (lmao){
       res.send("Registration request processed, visitor is " + lmao.name)
     }else{
       res.send("Error! Visitor already exists!, Add a visit log instead!")
+    }
+  }else {
+      res.send("Not a valid token!")
     }
   }
 )
@@ -131,16 +137,17 @@ app.get('/readQRvisitor', async (req, res)=>{
 )
 
 //create a visitor log
-app.post('/checkIn', async (req, res)=>{
+app.post('/checkIn', verifyToken, async (req, res)=>{
   let data = req.body
-  if (data.currentrole == "security" || data.currentrole == "admin"){
+  let authorize = req.user.role
+  if (authorize == "security" || authorize == "admin"){
     const logData = await createLog(data)
     if (logData){
       res.send({message : "Visitor Log Created!",logData})
     }else{
       res.send("Error! Log already exist!")
     }
-  }else if (data.currentrole == "resident" ){
+  }else if (authorize == "resident" ){
     res,send("You do not have access to create visitor logs!")
   }else{
     res.send("Error! Please enter a valid role!")
@@ -148,16 +155,17 @@ app.post('/checkIn', async (req, res)=>{
   })
 
 //update a visitor log to checkout visitor
-app.patch('/checkOut', async (req, res)=>{
+app.patch('/checkOut', verifyToken, async (req, res)=>{
   let data = req.body
-  if (req.user.role == "security" || req.user.currentrole == "admin"){
+  let authorize = req.user.role
+  if (authorize == "security" || authorize == "admin"){
     const logData = await updateLog(data)
     if (typeof logData == "object"){
       res.send( "Visitor succesfully checkout")
     }else{
       res.send("Error! Could not find log :[")
     }
-  }else if (data.currentrole == "resident" ){
+  }else if (authorize == "resident" ){
     res,send("You do not have access to update visitor logs!")
   }else{
     res.send("Error! Please enter a valid role!")
@@ -182,7 +190,6 @@ async function login(data) {
 
 async function registerUser(newdata) {
   //verify if username is already in databse
-  console.log(newdata)
   const match = await user.find({user_id : newdata.user_id}).next()
     if (match) {
       return 
@@ -195,7 +202,9 @@ async function registerUser(newdata) {
         "unit": newdata.unit,
         "hp_num" : newdata.hp_num,
         "role" : newdata.role
-      })
+      },function(err,result){ 
+        if(err) {return;} 
+         newdata = result })
           return (newdata)
       }  
   }
