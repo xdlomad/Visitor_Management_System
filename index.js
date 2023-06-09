@@ -2,7 +2,7 @@ const express = require('express')
 const jwt = require('jsonwebtoken');
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://b022110096:l8y6PQc3ylvAL1oe@firstdatabase.3xnid7z.mongodb.net/?retryWrites=true&w=majority";
+const uri = "mongodb+srv://username:password@firstdatabase.3xnid7z.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -49,20 +49,24 @@ app.get('/verify', verifyToken, (req, res) => {
 //login GET request
 app.get('/login', async (req, res) => {
     let data = req.body
-    const loginuser = await login(data);
-    if (loginuser) {
-    res.write(loginuser.user_id + " has logged in!")
-    res.end("\nWelcome "+ loginuser.name + "!")
+    let loginuser = await login(data);
+    const user = loginuser.verify
+    const token = loginuser.token
+    if (typeof loginuser == "object") {
+      res.write(user.user_id + " has logged in!")
+      res.write("\nYour token : " + token)
+      res.end("\nWelcome "+ user.name + "!")
     }else {
-      res.send("Wrong user id or password inputed D:")
+      res.send(loginuser)
     }
   });
 
-app.post('/registeruser', async (req, res)=>{
-  let data = req.body
-  if (data.currentrole == "security" || data.currentrole == "resident"){
+app.post('/registeruser', verifyToken, async (req, res)=>{
+  let authorize = req.user.role
+  if (authorize == "security" || authorize == "resident"){
     res.send("you do not have access to registering users!")
-  }else if (data.currentrole == "admin" ){
+  }else if (authorize == "admin" ){
+    let data = req.body
     const lmao = await registerUser(data)
     if (lmao){
       res.send("Registration request processed, new user is " + lmao.name)
@@ -146,9 +150,9 @@ app.post('/checkIn', async (req, res)=>{
 //update a visitor log to checkout visitor
 app.patch('/checkOut', async (req, res)=>{
   let data = req.body
-  if (data.currentrole == "security" || data.currentrole == "admin"){
+  if (req.user.role == "security" || req.user.currentrole == "admin"){
     const logData = await updateLog(data)
-    if (logData){
+    if (typeof logData == "object"){
       res.send( "Visitor succesfully checkout")
     }else{
       res.send("Error! Could not find log :[")
@@ -158,21 +162,27 @@ app.patch('/checkOut', async (req, res)=>{
   }else{
     res.send("Error! Please enter a valid role!")
     }
-  })
+  }) 
 
 async function login(data) {
   console.log("Alert! Alert! Someone is logging in!") //Display message to ensure function is called
   //Verify username is in the database
-  let verify = await user.find(data).next();
+  let verify = await user.find({user_id : data.user_id}).next();
   if (verify){
-    return(verify);
-  }else {
-    return
+    if (verify.password == data.password){
+      token = generateToken(verify)
+      return{verify,token};
+    }else{
+      return ("Wrong password D:")
     }
+  }else{
+    return ("Wrong user id D:")
+  }
   }
 
 async function registerUser(newdata) {
   //verify if username is already in databse
+  console.log(newdata)
   const match = await user.find({user_id : newdata.user_id}).next()
     if (match) {
       return 

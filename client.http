@@ -6,13 +6,14 @@ GET http://localhost:3000/login
 Content-Type: application/json
 
 {
-    "user_id": "R2769",
-    "password": "mudmud"
+    "user_id": "A3100",
+    "password": "lyla"
 }
 
 ###
 POST http://localhost:3000/registeruser
 Content-Type: application/json 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjI3MzAyNSwiZXhwIjoxNjg2Mjc2NjI1fQ.Z8jrxynHp4jyl7D9woPR71GgPOo9AbGuPETHimJATnA
 
 {
     "user_id": "R5552",
@@ -20,8 +21,7 @@ Content-Type: application/json
     "name": "boi",
     "unit": "T-11-1",
     "hp_num" : "543",
-    "role" : "resident",
-    "currentrole" : "admin"
+    "role" : "resident"
 }
 
 ###
