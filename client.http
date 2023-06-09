@@ -23,18 +23,18 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2N
 ###
 POST http://localhost:3000/registervisitor
 Content-Type: application/json 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjI3MzAyNSwiZXhwIjoxNjg2Mjc2NjI1fQ.Z8jrxynHp4jyl7D9woPR71GgPOo9AbGuPETHimJATnA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjMyNjgyNywiZXhwIjoxNjg2MzMwNDI3fQ.LlvcOUkt5w_7pbJANKO12x7ax6uP4YjCG5sV2IwvyDE
 
 {
-    "ref" : "672831021",
-    "name": "Megaman",
-    "IC_num": "220131-07-4531",
-    "car_num": "UTeM 1234",
-    "hp_num" : "012-2131231",
-    "pass": "VISITOR-0A",
-    "category" : "VISITOR",
-    "date" : "2023-06-21",
-    "unit" : "T-3-1",
+    "ref" : "6471121",
+    "name": "zenitsu",
+    "IC_num": "111131-07-6121",
+    "car_num": "UTeM 5555",
+    "hp_num" : "012-61942211",
+    "pass": "DELIVERY_0A",
+    "category" : "DELIVERY",
+    "date" : "2023-06-30",
+    "unit" : "T-7-4",
     "user_id" : "R0711"
 }
 
@@ -63,7 +63,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2N
     "log_id": "1",
     "ref" : "672831021",
     "user_id" : "S2203",
-    "currentrole" : "security"
 }
 
 ###
@@ -73,6 +72,23 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2N
 
 {
     "log_id": "1",
-    "currentrole" : "security"
+}
+
+###
+DELETE http://localhost:3000/deleteUser
+Content-Type: application/json 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjMyNDM2NSwiZXhwIjoxNjg2MzI3OTY1fQ.jeNUpJaajhFSJgpRkrNnZLVJTZudVKcyHxGJkZtiDS4
+
+{
+    "user_id": "R5552"
+}
+
+###
+DELETE http://localhost:3000/deleteVisitor
+Content-Type: application/json 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjMyNjgyNywiZXhwIjoxNjg2MzMwNDI3fQ.LlvcOUkt5w_7pbJANKO12x7ax6uP4YjCG5sV2IwvyDE
+
+{
+    "ref_num": "6471121"
 }
 

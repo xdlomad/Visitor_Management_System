@@ -79,15 +79,15 @@ app.post('/registeruser', verifyToken, async (req, res)=>{
   }
 )
 
-app.post('/deleteuser', verifyToken, async (req, res)=>{
+app.delete('/deleteuser', verifyToken, async (req, res)=>{
   let data = req.body
   let authorize = req.user.role
   if (authorize == "security" || authorize == "resident"){
     res.send("you do not have access to registering users!")
   }else if (authorize == "admin" ){
     const lmao = await deleteUser(data)
-    if (lmao){
-      res.send("user deleted" + lmao.name)
+    if (lmao.deletedCount == "1"){
+      res.send("user deleted " + data.name)
     }else{
       res.send("Error! no user found!")
     }
@@ -97,16 +97,31 @@ app.post('/deleteuser', verifyToken, async (req, res)=>{
   }
 )
 
-
-app.post('/registervisitor', async (req, res)=>{
-  let data = req.body
+app.post('/registervisitor', verifyToken, async (req, res)=>{
   let authorize = req.user.role
+  let data = req.body
   if(authorize){
   const lmao = await registerVisitor(data)
     if (lmao){
       res.send("Registration request processed, visitor is " + lmao.name)
     }else{
       res.send("Error! Visitor already exists!, Add a visit log instead!")
+    }
+  }else {
+      res.send("Not a valid token!")
+    }
+  }
+)
+
+app.delete('/deletevisitor', verifyToken, async (req, res)=>{
+  let data = req.body
+  let authorize = req.user.role
+  if(authorize){
+  const lmao = await deleteVisitor(data)
+    if (lmao.deletedCount == "1"){
+      res.send("Goodbye! " + lmao.name)
+    }else{
+      res.send("Error! No such visitor found D: , perhaps you actually wished your ex visited?")
     }
   }else {
       res.send("Not a valid token!")
@@ -204,17 +219,16 @@ async function registerUser(newdata) {
         "role" : newdata.role
       },function(err,result){ 
         if(err) {return;} 
-         newdata = result })
-          return (newdata)
+        return result })
       }  
   }
 
-async function deleteUser(newdata) {
+async function deleteUser(data) {
   //verify if username is already in databse
-  const match = await user.find({user_id : newdata.user_id}).next()
+  const match = await user.find({user_id : data.user_id}).next()
     if (match) {
-      await user.deleteOne({user_id : newdata.user_id})
-      return (newdata)
+      success = await user.deleteOne({user_id : data.user_id})
+      return (success)
     } else {
       return
       }  
@@ -242,6 +256,17 @@ async function registerVisitor(newdata) {
           return (newdata)
     }  
 }
+
+async function deleteVisitor(newdata) {
+  //verify if username is already in databse
+  const match = await visitor.find({ref_num : newdata.ref_num}).next()
+    if (match) {
+      const success  = await visitor.deleteOne({ref_num : newdata.ref_num})
+      return (success)
+    } else {
+      return
+      }  
+  }
 
 
 async function createLog(newdata) {
