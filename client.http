@@ -1,15 +1,24 @@
 GET http://localhost:3000/login 
 Content-Type: application/json
 
+# {
+#     "user_id": "A3100",
+#     "password": "lyla"
+# }
+
 {
-    "user_id": "A3100",
-    "password": "lyla"
+    "user_id": "R5552",
+    "password": "skrrttttt",
+    "name": "boi",
+    "unit": "T-11-1",
+    "hp_num" : "543",
+    "role" : "resident"
 }
 
 ###
 POST http://localhost:3000/registeruser
 Content-Type: application/json 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjM5MTgyNSwiZXhwIjoxNjg2Mzk1NDI1fQ.EGaunx_BUvlF6EgMeNx_vtpczuCvgvdjlyYMsSGAJfc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjQxNjgxNywiZXhwIjoxNjg2NDIwNDE3fQ.-jFkIPdVN7QE_I5DwluopePo0xsJ64F0BhJxuPVd6XY
 
 {
     "user_id": "R5552",

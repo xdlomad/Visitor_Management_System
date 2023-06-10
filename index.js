@@ -1,8 +1,12 @@
 const express = require('express')
 const jwt = require('jsonwebtoken');
 
+//encryption variables
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://username:password@cluster0.7krsk3h.mongodb.net/?retryWrites=true&w=majority";
+const uri = "mongodb+srv://b022110096:l8y6PQc3ylvAL1oe@firstdatabase.3xnid7z.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -48,6 +52,7 @@ app.get('/login', async (req, res) => {
     let data = req.body
     let result = await login(data);
     const loginuser = result.verify
+    console.log(loginuser)
     const token = result.token
     //check the returned result if its a object, only then can we welcome the user
     if (typeof loginuser == "object") { 
@@ -63,12 +68,15 @@ app.get('/login', async (req, res) => {
 //register user post request
 app.post('/registeruser', verifyToken, async (req, res)=>{
   let authorize = req.user.role //reading the token for authorisation
+  console.log(authorize)
   let data = req.body //requesting the data from body
   //checking the role of user
   if (authorize == "security" || authorize == "resident"){
     res.send("you do not have access to registering users!")
   }else if (authorize == "admin" ){
     const newUser = await registerUser(data)
+    console.log(newUser)
+  
     if (newUser){
       res.send("Registration request processed, new user is " + newUser.name)
     }else{
@@ -236,12 +244,16 @@ async function login(data) {
   //Verify username is in the database
   let verify = await user.find({user_id : data.user_id}).next();
   if (verify){
-    //verify password is correct
-    if (verify.password == data.password){
+    const match = await bcrypt.compare(data.password,verify.password);   
+    console.log(match)
+    if(match)
+    {
       token = generateToken(verify)
       return{verify,token};
-    }else{
-      return ("Wrong password D:")
+    }
+    else
+    {
+        return "Wrong password"
     }
   }else{
     return ("Wrong user id D:")
@@ -255,18 +267,27 @@ async function registerUser(newdata) {
       return 
     } else {
       // add info into database
+      const salt= await bcrypt.genSalt(saltRounds)
+      const hashh = await bcrypt.hash(newdata.password,salt)
       await user.insertOne({
         "user_id": newdata.user_id,
-        "password": newdata.password,
+        "password": hashh,
         "name": newdata.name,
         "unit": newdata.unit,
         "hp_num" : newdata.hp_num,
         "role" : newdata.role
-      },function(err,result){ //return the new data
-        if(err) {return;} 
-        return result })
-      }  
-  }
+      })
+      const dataa=await user.find({user_id : newdata.user_id}).next()
+      console.log(dataa)
+      return (dataa)
+      }}
+    
+
+
+    
+
+      
+
 
 async function updateUser(data) {
   result = await user.findOneAndUpdate({user_id : data.user_id},{$set : data}, {new: true})
