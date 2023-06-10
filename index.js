@@ -2,7 +2,7 @@ const express = require('express')
 const jwt = require('jsonwebtoken');
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://username:password@firstdatabase.3xnid7z.mongodb.net/?retryWrites=true&w=majority";
+const uri = "mongodb+srv://xuhuan:xuhuan01234@cluster0.7krsk3h.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -80,6 +80,24 @@ app.post('/registeruser', verifyToken, async (req, res)=>{
     }
   }
 )
+
+app.patch('/updateuser', verifyToken, async (req, res)=>{
+  let authorize = req.user.role //reading the token for authorisation
+  let data = req.body //requesting the data from body
+  //checking the role of user
+  if (authorize == "security" || authorize == "resident"){
+    res.send("you do not have access to update user information!")
+  }else if (authorize == "admin" ){
+    const result = await updateUser(data)
+    if (result){
+      res.send("User updated! " + result.name)
+    }else{
+      res.send("Error! User does not exist!")
+    }
+  }else {
+      res.send("Authorization and token is not found!")
+    }
+})
 
 //delete user DELETE request
 app.delete('/deleteuser', verifyToken, async (req, res)=>{
@@ -233,6 +251,15 @@ async function registerUser(newdata) {
         return result })
       }  
   }
+
+async function updateUser(data) {
+  result = await user.updateOne({user_id : data.user_id},{$set : data})
+  if(result.modifiedCount == "1"){
+    return (data)
+  }else{
+    return
+  }
+}
 
 async function deleteUser(data) {
   //verify if username is already in databse
