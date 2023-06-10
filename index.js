@@ -13,11 +13,11 @@ const client = new MongoClient(uri, {
   }
 });
 
-//qrCode_creator
+//qrCode_creator variables
 const qrCode_c = require('qrcode');
 const path = require('path');
 
-//qrCode Reader
+//qrCode Reader variables
 const jimp = require("jimp");
 const fs = require('fs')
 const qrCode_r = require('qrcode-reader');
@@ -31,20 +31,17 @@ const user = client.db("Visitor_Management_v1").collection("users")
 const visitor = client.db("Visitor_Management_v1").collection("visitors")
 const visitorLog = client.db("Visitor_Management_v1").collection("visitor_log")
 
-
+//json express variables
 const app = express()
 const port = 3000
 
-//Database of users
+//decode requests
 app.use(express.json());
 
+//start of port
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
-
-app.get('/verify', verifyToken, (req, res) => {
-    console.log(req.user)
-  })
 
 //login GET request
 app.get('/login', async (req, res) => {
@@ -52,40 +49,48 @@ app.get('/login', async (req, res) => {
     let result = await login(data);
     const loginuser = result.verify
     const token = result.token
+    //check the returned result if its a object, only then can we welcome the user
     if (typeof loginuser == "object") { 
       res.write(loginuser.user_id + " has logged in!")
       res.write("\nYour token : " + token)
       res.end("\nWelcome "+ loginuser.name + "!")
     }else {
-      res.send(loginuser)
+      //else send the failure message
+      res.send(result)
     }
   });
 
+//register user post request
 app.post('/registeruser', verifyToken, async (req, res)=>{
-  let authorize = req.user.role
-  let data = req.body
+  let authorize = req.user.role //reading the token for authorisation
+  let data = req.body //requesting the data from body
+  //checking the role of user
   if (authorize == "security" || authorize == "resident"){
     res.send("you do not have access to registering users!")
   }else if (authorize == "admin" ){
-    const lmao = await registerUser(data)
-    if (lmao){
-      res.send("Registration request processed, new user is " + lmao.name)
+    const newUser = await registerUser(data)
+    if (newUser){
+      res.send("Registration request processed, new user is " + newUser.name)
     }else{
       res.send("Error! User already exists!")
     }
+  //token does not exist
   }else {
       res.send("Token not valid!")
     }
   }
 )
 
+//delete user DELETE request
 app.delete('/deleteuser', verifyToken, async (req, res)=>{
   let data = req.body
   let authorize = req.user.role
+  //checking the role of user
   if (authorize == "security" || authorize == "resident"){
     res.send("you do not have access to registering users!")
   }else if (authorize == "admin" ){
     const lmao = await deleteUser(data)
+    //checking if item is deleted
     if (lmao.deletedCount == "1"){
       res.send("user deleted " + data.name)
     }else{
@@ -97,9 +102,11 @@ app.delete('/deleteuser', verifyToken, async (req, res)=>{
   }
 )
 
+//register visitor POST request
 app.post('/registervisitor', verifyToken, async (req, res)=>{
   let authorize = req.user.role
   let data = req.body
+  //checking if token is valid
   if(authorize){
   const lmao = await registerVisitor(data)
     if (lmao){
@@ -113,13 +120,15 @@ app.post('/registervisitor', verifyToken, async (req, res)=>{
   }
 )
 
+//delete visitor DELETE request
 app.delete('/deletevisitor', verifyToken, async (req, res)=>{
   let data = req.body
   let authorize = req.user.role
+  //checking if token is valid
   if(authorize){
   const lmao = await deleteVisitor(data)
     if (lmao.deletedCount == "1"){
-      res.send("Goodbye! " + lmao.name)
+      res.send("Goodbye " + lmao.name)
     }else{
       res.send("Error! No such visitor found D: , perhaps you actually wished your ex visited?")
     }
@@ -155,6 +164,7 @@ app.get('/readQRvisitor', async (req, res)=>{
 app.post('/checkIn', verifyToken, async (req, res)=>{
   let data = req.body
   let authorize = req.user.role
+  //checking role of users
   if (authorize == "security" || authorize == "admin"){
     const logData = await createLog(data)
     if (logData){
@@ -163,9 +173,9 @@ app.post('/checkIn', verifyToken, async (req, res)=>{
       res.send("Error! Log already exist!")
     }
   }else if (authorize == "resident" ){
-    res,send("You do not have access to create visitor logs!")
+    res.send("You do not have access to create visitor logs!")
   }else{
-    res.send("Error! Please enter a valid role!")
+    res.send("token not valid D:")
     }
   })
 
@@ -181,7 +191,7 @@ app.patch('/checkOut', verifyToken, async (req, res)=>{
       res.send("Error! Could not find log :[")
     }
   }else if (authorize == "resident" ){
-    res,send("You do not have access to update visitor logs!")
+    res.send("You do not have access to update visitor logs!")
   }else{
     res.send("Error! Please enter a valid role!")
     }
@@ -192,6 +202,7 @@ async function login(data) {
   //Verify username is in the database
   let verify = await user.find({user_id : data.user_id}).next();
   if (verify){
+    //verify password is correct
     if (verify.password == data.password){
       token = generateToken(verify)
       return{verify,token};
@@ -204,7 +215,7 @@ async function login(data) {
   }
 
 async function registerUser(newdata) {
-  //verify if username is already in databse
+  //verify if there is duplicate username in databse
   const match = await user.find({user_id : newdata.user_id}).next()
     if (match) {
       return 
@@ -217,7 +228,7 @@ async function registerUser(newdata) {
         "unit": newdata.unit,
         "hp_num" : newdata.hp_num,
         "role" : newdata.role
-      },function(err,result){ 
+      },function(err,result){ //return the new data
         if(err) {return;} 
         return result })
       }  
@@ -228,14 +239,14 @@ async function deleteUser(data) {
   const match = await user.find({user_id : data.user_id}).next()
     if (match) {
       success = await user.deleteOne({user_id : data.user_id})
-      return (success)
+      return (success) // return success message
     } else {
       return
       }  
   }
 
 async function registerVisitor(newdata) {
-  //verify if username is already in databse
+  //verify if there is duplciate ref_num
   const match = await visitor.find({"ref_num": newdata.ref}).next()
     if (match) {
       return 
@@ -270,7 +281,7 @@ async function deleteVisitor(newdata) {
 
 
 async function createLog(newdata) {
-  //verify if username is already in databse
+  //verify if there is duplicate log id
   const match = await visitorLog.find({"log_id": newdata.log_id}).next()
     if (match) {
       return 
@@ -353,9 +364,8 @@ function generateToken(loginProfile){
 }
 
 function verifyToken(req, res, next){
-  //let token = req.headers['authorization'].split(' ')[1];
   let header = req.headers.authorization
-  let token = header.split(' ')[1]
+  let token = header.split(' ')[1] //checking header
   jwt.verify(token,'very_long_long_long_long_numbers_alphabets_lmao_stillgoing_password',function(err,decoded){
     if(err) {
       res.send("invalid token")
