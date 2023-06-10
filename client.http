@@ -9,7 +9,7 @@ Content-Type: application/json
 ###
 POST http://localhost:3000/registeruser
 Content-Type: application/json 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjMyNDM2NSwiZXhwIjoxNjg2MzI3OTY1fQ.jeNUpJaajhFSJgpRkrNnZLVJTZudVKcyHxGJkZtiDS4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjM5MTgyNSwiZXhwIjoxNjg2Mzk1NDI1fQ.EGaunx_BUvlF6EgMeNx_vtpczuCvgvdjlyYMsSGAJfc
 
 {
     "user_id": "R5552",
@@ -92,3 +92,29 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2N
     "ref_num": "6471121"
 }
 
+###
+PATCH http://localhost:3000/updateUser
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjM5MTgyNSwiZXhwIjoxNjg2Mzk1NDI1fQ.EGaunx_BUvlF6EgMeNx_vtpczuCvgvdjlyYMsSGAJfc
+
+
+{
+    "user_id": "R5552",
+    "name": "boyiboyi",
+    "password" : "hahaha123",
+    "unit": "T-7-5",
+    "hp_num": "0173902719"
+}
+
+###
+PATCH http://localhost:3000/updateVisitor
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjM5NjA1MCwiZXhwIjoxNjg2Mzk5NjUwfQ.OTByAGdGDnmv3VvMcsQyDBilFf38_QFW8mhJ56SDONI
+
+{
+    "ref_num": "672831021",
+    "IC_num": "030131-03-1810",
+    "unit": "T-7-5",
+    "hp": "0173902719",
+    "car_num": "VEH7013"
+}

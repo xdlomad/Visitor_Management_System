@@ -2,7 +2,7 @@ const express = require('express')
 const jwt = require('jsonwebtoken');
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://username:password@cluster0.7krsk3h.mongodb.net/?retryWrites=true&w=majority";
+const uri = "mongodb+srv://xuhuan:xuhuan01234@cluster0.7krsk3h.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -137,6 +137,22 @@ app.post('/registervisitor', verifyToken, async (req, res)=>{
     }
   }
 )
+
+app.patch('/updatevisitor', verifyToken, async (req, res)=>{
+  let authorize = req.user.role
+  let data = req.body
+  //checking if token is valid
+  if(authorize){
+  const resultupdate = await updateVisitor(data)
+    if (resultupdate){
+      res.send("Visitor updated! " + resultupdate.value.name)
+    }else{
+      res.send("Error! Visitor does not exist!")
+    }
+  }else {
+      res.send("Not a valid token!")
+    }
+  })
 
 //delete visitor DELETE request
 app.delete('/deletevisitor', verifyToken, async (req, res)=>{
@@ -293,6 +309,15 @@ async function registerVisitor(newdata) {
       })
           return (newdata)
     }  
+}
+
+async function updateVisitor(data) {
+  result = await visitor.findOneAndUpdate({ref_num : data.ref_num},{$set : data}, {new:true})
+  if(result){
+    return (result)
+  }else{
+    return
+  }
 }
 
 async function deleteVisitor(newdata) {
