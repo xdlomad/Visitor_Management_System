@@ -95,13 +95,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2N
 ###
 PATCH http://localhost:3000/updateUser
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjM5MTgyNSwiZXhwIjoxNjg2Mzk1NDI1fQ.EGaunx_BUvlF6EgMeNx_vtpczuCvgvdjlyYMsSGAJfc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjM5ODMyOCwiZXhwIjoxNjg2NDAxOTI4fQ.z4LsrlvgMgUGCaOOWJpcGYUsCC5yEiaHCMtAJBfnG8A
 
 
 {
     "user_id": "R5552",
-    "name": "boyiboyi",
-    "password" : "hahaha123",
+    "name": "boyiboyiii",
+    "password" : "sheela9103i",
     "unit": "T-7-5",
     "hp_num": "0173902719"
 }

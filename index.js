@@ -2,7 +2,7 @@ const express = require('express')
 const jwt = require('jsonwebtoken');
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://xuhuan:xuhuan01234@cluster0.7krsk3h.mongodb.net/?retryWrites=true&w=majority";
+const uri = "mongodb+srv://username:password@cluster0.7krsk3h.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -90,7 +90,7 @@ app.patch('/updateuser', verifyToken, async (req, res)=>{
   }else if (authorize == "admin" ){
     const result = await updateUser(data)
     if (result){
-      res.send("User updated! " + result.name)
+      res.send("User updated! " + result.value.name)
     }else{
       res.send("Error! User does not exist!")
     }
@@ -269,9 +269,9 @@ async function registerUser(newdata) {
   }
 
 async function updateUser(data) {
-  result = await user.updateOne({user_id : data.user_id},{$set : data})
-  if(result.modifiedCount == "1"){
-    return (data)
+  result = await user.findOneAndUpdate({user_id : data.user_id},{$set : data}, {new: true})
+  if(result){
+    return (result)
   }else{
     return
   }
