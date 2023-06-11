@@ -1,24 +1,24 @@
 GET http://localhost:3000/login 
 Content-Type: application/json
 
-# {
-#     "user_id": "A3100",
-#     "password": "lyla"
-# }
-
 {
-    "user_id": "R5552",
-    "password": "skrrttttt",
-    "name": "boi",
-    "unit": "T-11-1",
-    "hp_num" : "543",
-    "role" : "resident"
+    "user_id": "A3100",
+    "password": "lyla"
 }
+
+# {
+#     "user_id": "R5552",
+#     "password": "skrrttttt",
+#     "name": "boi",
+#     "unit": "T-11-1",
+#     "hp_num" : "543",
+#     "role" : "resident"
+# }
 
 ###
 POST http://localhost:3000/registeruser
 Content-Type: application/json 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjQxNjgxNywiZXhwIjoxNjg2NDIwNDE3fQ.-jFkIPdVN7QE_I5DwluopePo0xsJ64F0BhJxuPVd6XY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjQ1MDIzOCwiZXhwIjoxNjg2NDUzODM4fQ.XkSTMYnG-oSp8BQQ_nnE0CP40biCeBD1OchdCNnmA40
 
 {
     "user_id": "R5552",
@@ -32,7 +32,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2N
 ###
 POST http://localhost:3000/registervisitor
 Content-Type: application/json 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjMyNjgyNywiZXhwIjoxNjg2MzMwNDI3fQ.LlvcOUkt5w_7pbJANKO12x7ax6uP4YjCG5sV2IwvyDE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjQ0OTgyNSwiZXhwIjoxNjg2NDUzNDI1fQ.aYqPolUJ8w57Bt6tbQ9wpZp-XL1cWzA-MzLOiukhoE4
 
 {
     "ref" : "6471121",
@@ -104,7 +104,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2N
 ###
 PATCH http://localhost:3000/updateUser
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjM5ODMyOCwiZXhwIjoxNjg2NDAxOTI4fQ.z4LsrlvgMgUGCaOOWJpcGYUsCC5yEiaHCMtAJBfnG8A
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjQ0OTgyNSwiZXhwIjoxNjg2NDUzNDI1fQ.aYqPolUJ8w57Bt6tbQ9wpZp-XL1cWzA-MzLOiukhoE4
 
 
 {

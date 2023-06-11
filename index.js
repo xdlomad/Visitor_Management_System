@@ -238,27 +238,43 @@ app.patch('/checkOut', verifyToken, async (req, res)=>{
     res.send("Error! Please enter a valid role!")
     }
   }) 
+//bcrypt login function
+// async function login(data) {
+//   console.log("Alert! Alert! Someone is logging in!") //Display message to ensure function is called
+//   //Verify username is in the database
+//   let verify = await user.find({user_id : data.user_id}).next();
+//   if (verify){
 
+//     const match = await bcrypt.compare(data.password,verify.password);   
+//     console.log(match)
+//     if(match)
+//     {
+//       token = generateToken(verify)
+//       return{verify,token};
+//     }
+//     else
+//     {
+//         return "Wrong password"
+//     }
+//   }else{
+//     return ("Wrong user id D:")
+//   }
+//   }
 async function login(data) {
   console.log("Alert! Alert! Someone is logging in!") //Display message to ensure function is called
   //Verify username is in the database
   let verify = await user.find({user_id : data.user_id}).next();
   if (verify){
-    const match = await bcrypt.compare(data.password,verify.password);   
-    console.log(match)
-    if(match)
-    {
+    //verify password is correct
+    if (verify.password == data.password){
       token = generateToken(verify)
       return{verify,token};
-    }
-    else
-    {
-        return "Wrong password"
+    }else{
+      return ("Wrong password D:")
     }
   }else{
     return ("Wrong user id D:")
-  }
-  }
+}}
 
 async function registerUser(newdata) {
   //verify if there is duplicate username in databse
@@ -278,7 +294,7 @@ async function registerUser(newdata) {
         "role" : newdata.role
       })
       const dataa=await user.find({user_id : newdata.user_id}).next()
-      console.log(dataa)
+      //console.log(dataa)
       return (dataa)
       }}
     
@@ -290,6 +306,9 @@ async function registerUser(newdata) {
 
 
 async function updateUser(data) {
+  const salt= await bcrypt.genSalt(saltRounds)
+  const hashh = await bcrypt.hash(data.password,salt)
+  data.password = hashh
   result = await user.findOneAndUpdate({user_id : data.user_id},{$set : data}, {new: true})
   if(result){
     return (result)
