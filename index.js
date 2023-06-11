@@ -75,7 +75,7 @@ app.post('/registeruser', verifyToken, async (req, res)=>{
     res.send("you do not have access to registering users!")
   }else if (authorize == "admin" ){
     const newUser = await registerUser(data)
-    console.log(newUser)
+    //console.log(newUser)
   
     if (newUser){
       res.send("Registration request processed, new user is " + newUser.name)
@@ -283,8 +283,9 @@ async function registerUser(newdata) {
       return 
     } else {
       // add info into database
-      const salt= await bcrypt.genSalt(saltRounds)
-      const hashh = await bcrypt.hash(newdata.password,salt)
+      
+      const hashh = await encryption(newdata.password)
+      console.log(hashh)
       await user.insertOne({
         "user_id": newdata.user_id,
         "password": hashh,
@@ -298,17 +299,9 @@ async function registerUser(newdata) {
       return (dataa)
       }}
     
-
-
-    
-
-      
-
-
 async function updateUser(data) {
-  const salt= await bcrypt.genSalt(saltRounds)
-  const hashh = await bcrypt.hash(data.password,salt)
-  data.password = hashh
+
+  data.password = await encryption(data.password)
   result = await user.findOneAndUpdate({user_id : data.user_id},{$set : data}, {new: true})
   if(result){
     return (result)
@@ -466,4 +459,10 @@ function verifyToken(req, res, next){
 
     next()
   });
+}
+
+async function encryption(data){
+  const salt= await bcrypt.genSalt(saltRounds)
+  const hashh = await bcrypt.hash(data,salt)
+  return hashh
 }
