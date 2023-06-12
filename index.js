@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://b022110096:l8y6PQc3ylvAL1oe@firstdatabase.3xnid7z.mongodb.net/?retryWrites=true&w=majority";
+const uri = "mongodb+srv://username:password@firstdatabase.3xnid7z.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -291,14 +291,9 @@ async function updateUser(data) {
 
 async function deleteUser(data) {
   //verify if username is already in databse
-  const match = await user.find({user_id : data.user_id}).next()
-    if (match) {
-      success = await user.deleteOne({user_id : data.user_id})
-      return (success) // return success message
-    } else {
-      return
-      }  
-  }
+  success = await user.deleteOne({user_id : data.user_id})
+  return (success) // return success message
+}
 
 async function registerVisitor(newdata, currentUser) {
   //verify if there is duplciate ref_num
