@@ -6,33 +6,24 @@ Content-Type: application/json
     "password": "lyla"
 }
 
-# {
-#     "user_id": "R5552",
-#     "password": "skrrttttt",
-#     "name": "boi",
-#     "unit": "T-11-1",
-#     "hp_num" : "543",
-#     "role" : "resident"
-# }
-
 ###
 POST http://localhost:3000/registeruser
 Content-Type: application/json 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjQ1NTc2NiwiZXhwIjoxNjg2NDU5MzY2fQ.kSuPASUxVWiSvhf3fj-EFThS9PBgMsn0vNGBSlgFj8k
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjU4MTA1NiwiZXhwIjoxNjg2NTg0NjU2fQ.KEPjam1Mszzo94zqhlJHRk-sjads_hxE8vRMQrp14wE
 
 {
-    "user_id": "R5552",
-    "password": "skrrttttt",
-    "name": "boi",
-    "unit": "T-11-1",
-    "hp_num" : "543",
-    "role" : "resident"
+    "user_id": "S2203",
+    "password": "stellar",
+    "name": "suisei",
+    "unit": "security",
+    "hp_num" : "43165",
+    "role" : "security"
 }
 
 ###
 POST http://localhost:3000/registervisitor
 Content-Type: application/json 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjQ0OTgyNSwiZXhwIjoxNjg2NDUzNDI1fQ.aYqPolUJ8w57Bt6tbQ9wpZp-XL1cWzA-MzLOiukhoE4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjU4MTA1NiwiZXhwIjoxNjg2NTg0NjU2fQ.KEPjam1Mszzo94zqhlJHRk-sjads_hxE8vRMQrp14wE
 
 {
     "ref" : "6471121",
@@ -66,21 +57,21 @@ Content-Type: application/json
 ###
 POST http://localhost:3000/checkIn
 Content-Type: application/json 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjMyNDM2NSwiZXhwIjoxNjg2MzI3OTY1fQ.jeNUpJaajhFSJgpRkrNnZLVJTZudVKcyHxGJkZtiDS4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjU4MTA1NiwiZXhwIjoxNjg2NTg0NjU2fQ.KEPjam1Mszzo94zqhlJHRk-sjads_hxE8vRMQrp14wE
 
 {
     "log_id": "1",
     "ref" : "672831021",
-    "user_id" : "S2203",
+    "user_id" : "S2203"
 }
 
 ###
 PATCH http://localhost:3000/checkOut
 Content-Type: application/json 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjMyNDM2NSwiZXhwIjoxNjg2MzI3OTY1fQ.jeNUpJaajhFSJgpRkrNnZLVJTZudVKcyHxGJkZtiDS4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjM5NzY3NiwiZXhwIjoxNjg2NDAxMjc2fQ.Dpykyg6Or7mgic-RNkhQnMc0LoYDPFcgotc86WUvslg
 
 {
-    "log_id": "1",
+    "log_id": "1"
 }
 
 ###
