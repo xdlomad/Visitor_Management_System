@@ -127,10 +127,11 @@ app.delete('/deleteuser', verifyToken, async (req, res)=>{
 //register visitor POST request
 app.post('/registervisitor', verifyToken, async (req, res)=>{
   let authorize = req.user.role
+  let loginUser = req.user.user_id
   let data = req.body
   //checking if token is valid
   if(authorize){
-  const lmao = await registerVisitor(data)
+  const lmao = await registerVisitor(data, loginUser)
     if (lmao){
       res.send("Registration request processed, visitor is " + lmao.name)
     }else{
@@ -144,12 +145,13 @@ app.post('/registervisitor', verifyToken, async (req, res)=>{
 
 app.patch('/updatevisitor', verifyToken, async (req, res)=>{
   let authorize = req.user.role
+  let loginUser = req.user.user_id
   let data = req.body
   //checking if token is valid
   if(authorize){
-  const resultupdate = await updateVisitor(data)
+  const resultupdate = await updateVisitor(data,loginUser)
     if (resultupdate){
-      res.send("Visitor updated! " + resultupdate.value.name)
+      res.send("Visitor " + resultupdate.value.name + " has been updated :D!")
     }else{
       res.send("Error! Visitor does not exist!")
     }
@@ -162,9 +164,10 @@ app.patch('/updatevisitor', verifyToken, async (req, res)=>{
 app.delete('/deletevisitor', verifyToken, async (req, res)=>{
   let data = req.body
   let authorize = req.user.role
+  let loginUser = req.user.user_id
   //checking if token is valid
   if(authorize){
-  const lmao = await deleteVisitor(data)
+  const lmao = await deleteVisitor(data,loginUser)
     if (lmao.deletedCount == "1"){
       res.send("Goodbye " + lmao.name)
     }else{
@@ -297,7 +300,7 @@ async function deleteUser(data) {
       }  
   }
 
-async function registerVisitor(newdata) {
+async function registerVisitor(newdata, currentUser) {
   //verify if there is duplciate ref_num
   const match = await visitor.find({"ref_num": newdata.ref}).next()
     if (match) {
@@ -314,32 +317,25 @@ async function registerVisitor(newdata) {
         "category" : newdata.category,
         "visit_date" : newdata.date,
         "unit" : newdata.unit,
-        "user_id" : newdata.user_id
+        "user_id" : currentUser
       })
           return (newdata)
     }  
 }
 
-async function updateVisitor(data) {
-  result = await visitor.findOneAndUpdate({ref_num : data.ref_num},{$set : data}, {new:true})
-  if(result){
-    return (result)
+async function updateVisitor(data, currentUser) {
+  result = await visitor.findOneAndUpdate({"ref_num": data.ref_num, "user_id" : currentUser },{$set : data}, {new:true})
+  if(result.value == null){
+    return 
   }else{
-    return
+    return (result)
   }
 }
 
-async function deleteVisitor(newdata) {
-  //verify if username is already in databse
-  const match = await visitor.find({ref_num : newdata.ref_num}).next()
-    if (match) {
-      const success  = await visitor.deleteOne({ref_num : newdata.ref_num})
-      return (success)
-    } else {
-      return
-      }  
-  }
-
+async function deleteVisitor(newdata, currentUser) {
+  const success  = await visitor.deleteOne({ref_num : newdata.ref_num})
+  return (success)
+}
 
 async function createLog(newdata) {
   //verify if there is duplicate log id
