@@ -202,6 +202,33 @@ app.get('/readQRvisitor', async (req, res)=>{
   }
 )
 
+// app.get('/findvisitorlog', verifyToken, async (req, res)=>{
+//   let authorize = req.user.role //reading the token for authorisation
+//   console.log(authorize)
+//   let data = req.body //requesting the data from body
+//   //checking the role of user
+//   if (authorize == "resident"){
+//     res.send("you do not have access to registering users!")
+//   }else if (authorize == "admin" ){
+//     const result = await find_visitorlog(data)
+//     if (result){
+//       res.send({message : "Visitor log found!",result})
+//     }else{
+//       res.send("Error! Visitor log does not exist!")
+//     }
+
+//   }
+//   else if (authorize == "security"){
+//     const result = await find_allvisitorlog(data)
+//     if (result){
+//       res.send({message : "Visitor log found!",result})
+//     }else{
+//       res.send("Error! Visitor log does not exist!")
+//     }
+//   }
+// }
+// )
+
 //create a visitor log
 app.post('/checkIn', verifyToken, async (req, res)=>{
   let data = req.body
@@ -439,6 +466,31 @@ async function qrCreate(data){
 }
   }
 
+async function find_allvisitorlog(newdata){
+  const match = await visitorLog.find({"log_id":{$eq : newdata.log_id}}).next()
+  if (match){
+    //console.log(match)
+    return (match)
+  } else{
+    return ("Error! Visitor log does not exist !")
+  }
+}
+
+
+app.get('/findvisitorlog', verifyToken, async (req, res)=>{
+  let authorize = req.user.role //reading the token for authorisation
+  let data = req.body //requesting the data from body
+  //checking the role of user
+  if (authorize == "resident"){
+    res.send("you do not have access to registering users!")
+  }
+  else if (authorize == "security" || authorize == "admin"){
+    const result = await find_allvisitorlog(data)
+    res.send(result)
+  }
+}
+)
+
 function currentTime(){
   const today = new Date().toLocaleString("en-US", {timeZone: "singapore"})
   return today
@@ -466,3 +518,4 @@ async function encryption(data){
   const hashh = await bcrypt.hash(data,salt)
   return hashh
 }
+

@@ -1,6 +1,16 @@
 GET http://localhost:3000/login 
 Content-Type: application/json
 
+#{
+#    "user_id": "S2203",
+#    "password": "stellar"
+#}
+
+#{
+#    "user_id": "R2769",
+#    "password": "mudmud"
+#}
+
 {
     "user_id": "A3100",
     "password": "lyla"
@@ -32,7 +42,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2N
 ###
 POST http://localhost:3000/registervisitor
 Content-Type: application/json 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjQ0OTgyNSwiZXhwIjoxNjg2NDUzNDI1fQ.aYqPolUJ8w57Bt6tbQ9wpZp-XL1cWzA-MzLOiukhoE4
+Authorization: Bearer 
 
 {
     "ref" : "6471121",
@@ -126,4 +136,13 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2N
     "unit": "T-7-5",
     "hp": "0173902719",
     "car_num": "VEH7013"
+}
+
+###
+GET http://localhost:3000/findvisitorlog
+Content-Type: application/json 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDg3M2EyNDhjMGZmYzc5NGQ4ZGMxNzEiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjYxOTc0NywiZXhwIjoxNjg2NjIzMzQ3fQ.oL8Qm4l6MVbhAiDGsTy_6r-TRSr6Ipz6kcdAymiHOOE
+
+{
+    "log_id": "1"
 }
