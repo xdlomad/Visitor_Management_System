@@ -1,5 +1,20 @@
 [{
   "_id": {
+    "$oid": "6487411eb79492d3d8b4ed71"
+  },
+  "ref_num": "6471121",
+  "name": "zenitsu",
+  "IC_num": "111131-07-6121",
+  "car_num": "UTeM 5555",
+  "hp": "012-61942211",
+  "pass": "DELIVERY_0A",
+  "category": "DELIVERY",
+  "visit_date": "2023-06-30",
+  "unit": "T-7-4",
+  "user_id": "A3100"
+},
+{
+  "_id": {
     "$oid": "6475eb1b688a3fd960fc0271"
   },
   "ref_num": "672831021",

@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://username:password@firstdatabase.3xnid7z.mongodb.net/?retryWrites=true&w=majority";
+const uri = "mongodb+srv://b022110096:l8y6PQc3ylvAL1oe@firstdatabase.3xnid7z.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -44,7 +44,9 @@ app.use(express.json());
 
 //start of port
 app.listen(port, () => {
+  
   console.log(`Example app listening on port ${port}`)
+  
 })
 
 //login GET request
@@ -64,6 +66,25 @@ app.get('/login', async (req, res) => {
     }
   });
 
+app.get('/finduser', verifyToken, async (req, res)=>{
+  let authorize = req.user.role //reading the token for authorisation
+  let data = req.body //requesting the data from body
+  //checking the role of user
+  if (authorize == "resident"){
+    res.send("you do not have access to finding users!")
+  }else if (authorize == "admin" || authorize == "security" ){
+    const newUser = await findUser(data)
+    if (newUser){
+      res.send(newUser)
+    }else{
+      res.send("Error! User does not exist")
+    }
+  //token does not exist
+  }else {
+      res.send("Token not valid!")
+    }
+  })
+
 //register user post request
 app.post('/registeruser', verifyToken, async (req, res)=>{
   let authorize = req.user.role //reading the token for authorisation
@@ -82,8 +103,7 @@ app.post('/registeruser', verifyToken, async (req, res)=>{
   }else {
       res.send("Token not valid!")
     }
-  }
-)
+  })
 
 app.patch('/updateuser', verifyToken, async (req, res)=>{
   let authorize = req.user.role //reading the token for authorisation
@@ -143,13 +163,24 @@ app.post('/registervisitor', verifyToken, async (req, res)=>{
   }
 )
 
+app.get('/findvisitor', verifyToken, async (req, res)=>{
+  let authorize = req.user//reading the token for authorisation
+  let data = req.body //requesting the data from body
+  //checking the role of user
+  if (authorize.role){
+    const result = await findVisitor(data,authorize)
+    res.send(result)
+  }else{
+    res.send("Not a valid token!") 
+  }
+  })
+
 app.patch('/updatevisitor', verifyToken, async (req, res)=>{
-  let authorize = req.user.role
-  let loginUser = req.user.user_id
+  let authorize = req.user
   let data = req.body
   //checking if token is valid
-  if(authorize){
-  const resultupdate = await updateVisitor(data,loginUser)
+  if(authorize.role){
+  const resultupdate = await updateVisitor(data,authorize)
     if (resultupdate){
       res.send("Visitor " + resultupdate.value.name + " has been updated :D!")
     }else{
@@ -158,18 +189,17 @@ app.patch('/updatevisitor', verifyToken, async (req, res)=>{
   }else {
       res.send("Not a valid token!")
     }
-  })
+})
 
 //delete visitor DELETE request
 app.delete('/deletevisitor', verifyToken, async (req, res)=>{
   let data = req.body
-  let authorize = req.user.role
-  let loginUser = req.user.user_id
+  let authorize = req.user
   //checking if token is valid
-  if(authorize){
-  const lmao = await deleteVisitor(data,loginUser)
-    if (lmao.deletedCount == "1"){
-      res.send("Goodbye " + lmao.name)
+  if(authorize.role){
+  const deletedV = await deleteVisitor(data,authorize)
+    if (deletedV.deletedCount == "1"){
+      res.send("Goodbye " + data.user_id)
     }else{
       res.send("Error! No such visitor found D: , perhaps you actually wished your ex visited?")
     }
@@ -202,33 +232,6 @@ app.get('/readQRvisitor', async (req, res)=>{
   }
 )
 
-// app.get('/findvisitorlog', verifyToken, async (req, res)=>{
-//   let authorize = req.user.role //reading the token for authorisation
-//   console.log(authorize)
-//   let data = req.body //requesting the data from body
-//   //checking the role of user
-//   if (authorize == "resident"){
-//     res.send("you do not have access to registering users!")
-//   }else if (authorize == "admin" ){
-//     const result = await find_visitorlog(data)
-//     if (result){
-//       res.send({message : "Visitor log found!",result})
-//     }else{
-//       res.send("Error! Visitor log does not exist!")
-//     }
-
-//   }
-//   else if (authorize == "security"){
-//     const result = await find_allvisitorlog(data)
-//     if (result){
-//       res.send({message : "Visitor log found!",result})
-//     }else{
-//       res.send("Error! Visitor log does not exist!")
-//     }
-//   }
-// }
-// )
-
 //create a visitor log
 app.post('/checkIn', verifyToken, async (req, res)=>{
   let data = req.body
@@ -248,6 +251,20 @@ app.post('/checkIn', verifyToken, async (req, res)=>{
     }
   })
 
+app.get('/findvisitorlog', verifyToken, async (req, res)=>{
+    let authorize = req.user.role //reading the token for authorisation
+    let data = req.body //requesting the data from body
+    //checking the role of user
+    if (authorize == "resident"){
+      res.send("you do not have access to registering users!")
+    }
+    else if (authorize == "security" || authorize == "admin"){
+      const result = await findLog(data)
+      res.send(result)
+    }
+  }
+  )
+
 //update a visitor log to checkout visitor
 app.patch('/checkOut', verifyToken, async (req, res)=>{
   let data = req.body
@@ -264,7 +281,8 @@ app.patch('/checkOut', verifyToken, async (req, res)=>{
   }else{
     res.send("Error! Please enter a valid role!")
     }
-  }) 
+  })
+
 
 async function login(data) {
   console.log("Alert! Alert! Someone is logging in!") //Display message to ensure function is called
@@ -283,6 +301,12 @@ async function login(data) {
     return ("Wrong user id D:")
 }}
 
+async function findUser(newdata) {
+  //verify if there is duplicate username in databse
+  const match = await user.find({user_id : newdata.user_id}).next()
+  return (match)
+}
+
 async function registerUser(newdata) {
   //verify if there is duplicate username in databse
   const match = await user.find({user_id : newdata.user_id}).next()
@@ -300,8 +324,8 @@ async function registerUser(newdata) {
         "hp_num" : newdata.hp_num,
         "role" : newdata.role
       })
-      const newUser=await user.find({user_id : newdata.user_id}).next()
-      return (newUser)
+  const newUser=await user.find({user_id : newdata.user_id}).next()
+  return (newUser)
 }}
     
 async function updateUser(data) {
@@ -345,8 +369,26 @@ async function registerVisitor(newdata, currentUser) {
     }  
 }
 
+async function findVisitor(newdata, currentUser){
+  if (currentUser.role == "resident"){
+    filter=Object.assign(newdata, {"user_id" : currentUser.user_id})
+    match = await visitor.find(filter).toArray()
+  }else if (currentUser.role == "security" || currentUser.role == "admin"){
+    match = await visitor.find(newdata).toArray()
+  }
+  if (match.length != 0){
+    return (match)
+  } else{
+    return ("Error! Visitor does not exist !")
+  }
+}
+
 async function updateVisitor(data, currentUser) {
-  result = await visitor.findOneAndUpdate({"ref_num": data.ref_num, "user_id" : currentUser },{$set : data}, {new:true})
+  if (currentUser.role == "resident"|| currentUser.role == "security"){
+    result = await visitor.findOneAndUpdate({"ref_num": data.ref_num, "user_id" : currentUser.user_id },{$set : data}, {new:true})
+  }else if (currentUser.role == "admin"){
+    result = await visitor.findOneAndUpdate({"ref_num": data.ref_num},{$set : data}, {new:true})
+  }
   if(result.value == null){
     return 
   }else{
@@ -355,7 +397,11 @@ async function updateVisitor(data, currentUser) {
 }
 
 async function deleteVisitor(newdata, currentUser) {
-  const success  = await visitor.deleteOne({ref_num : newdata.ref_num})
+  if (currentUser.role == "resident"|| currentUser.role == "security"){
+    success  = await visitor.deleteOne({ref_num : newdata.ref_num, user_id : currentUser.user_id})
+  }else if (currentUser.role == "admin"){
+    success  = await visitor.deleteOne({ref_num : newdata.ref_num})
+  }
   return (success)
 }
 
@@ -434,30 +480,14 @@ async function qrCreate(data){
   }
 }
 
-async function find_allvisitorlog(newdata){
-  const match = await visitorLog.find({"log_id":{$eq : newdata.log_id}}).next()
-  if (match){
-    //console.log(match)
+async function findLog(newdata){
+  const match = await visitorLog.find(newdata).toArray()
+  if (match.length != 0){
     return (match)
   } else{
     return ("Error! Visitor log does not exist !")
   }
 }
-
-
-app.get('/findvisitorlog', verifyToken, async (req, res)=>{
-  let authorize = req.user.role //reading the token for authorisation
-  let data = req.body //requesting the data from body
-  //checking the role of user
-  if (authorize == "resident"){
-    res.send("you do not have access to registering users!")
-  }
-  else if (authorize == "security" || authorize == "admin"){
-    const result = await find_allvisitorlog(data)
-    res.send(result)
-  }
-}
-)
 
 function currentTime(){
   const today = new Date().toLocaleString("en-US", {timeZone: "singapore"})
@@ -465,7 +495,7 @@ function currentTime(){
 }
 
 function generateToken(loginProfile){
-  return jwt.sign(loginProfile, 'very_long_long_long_long_numbers_alphabets_lmao_stillgoing_password', { expiresIn: '1h' });
+  return jwt.sign(loginProfile, 'very_long_long_long_long_numbers_alphabets_lmao_stillgoing_password', { expiresIn: '2h' });
 }
 
 function verifyToken(req, res, next){

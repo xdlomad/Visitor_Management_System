@@ -1,10 +1,10 @@
 [{
   "_id": {
-    "$oid": "647f5ce39518d4e8d3689a62"
+    "$oid": "64872f6c7da83fb9017cc85a"
   },
   "log_id": "1",
   "ref_num": "672831021",
-  "CheckIn_Time": "6/7/2023, 12:20:51 AM",
-  "CheckOut_Time": "6/7/2023, 12:26:15 AM",
+  "CheckIn_Time": "6/12/2023, 10:45:00 PM",
+  "CheckOut_Time": "",
   "user_id": "S2203"
 }]

@@ -1,9 +1,31 @@
 [{
   "_id": {
-    "$oid": "647464667e0e73e21de40c56"
+    "$oid": "6487397865706a004faebfae"
+  },
+  "user_id": "R5552",
+  "password": "$2b$10$TYuYsrN5F9Y1v7WVAh2M5.KrAzgE1hXXxISsuGV4q/YqWNxaekk.O",
+  "name": "boyiboyiii",
+  "unit": "T-7-5",
+  "hp_num": "0173902719",
+  "role": "resident"
+},
+{
+  "_id": {
+    "$oid": "648739f28c0ffc794d8dc170"
+  },
+  "user_id": "R2769",
+  "password": "$2b$10$ZXC8MVZjAKmDJnQhbUj03uxjcq4oKx4.WZ22oYJyOFUXKuSTWJffK",
+  "name": "mudkip",
+  "unit": "T-13-2",
+  "hp_num": "21111",
+  "role": "resident"
+},
+{
+  "_id": {
+    "$oid": "64873a248c0ffc794d8dc171"
   },
   "user_id": "A3100",
-  "password": "lyla",
+  "password": "$2b$10$f3R4.IXsixhTmryW8eUc1.3W1D5i1a3wlmJSgHpPt9QcvwieeaDyG",
   "name": "rocket",
   "unit": "management",
   "hp_num": "31232",
@@ -11,23 +33,12 @@
 },
 {
   "_id": {
-    "$oid": "6478a87052bd234e9122f3c2"
+    "$oid": "64873a4d8c0ffc794d8dc172"
   },
   "user_id": "S2203",
-  "password": "stellar",
+  "password": "$2b$10$r2p7.kVaD3ujPmHsZGGAHu1FLSfALKGgCl13NsWhWJkeyWze3pI0.",
   "name": "suisei",
   "unit": "security",
   "hp_num": "43165",
   "role": "security"
-},
-{
-  "_id": {
-    "$oid": "648346e72e31d267c56a3dc2"
-  },
-  "user_id": "R2769",
-  "password": "mudmud",
-  "name": "mudkip",
-  "unit": "T-11-1",
-  "hp_num": "21111",
-  "role": "resident"
 }]
