@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://b022110096:l8y6PQc3ylvAL1oe@firstdatabase.3xnid7z.mongodb.net/?retryWrites=true&w=majority";
+const uri = "mongodb+srv://username:password@firstdatabase.3xnid7z.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -52,7 +52,6 @@ app.get('/login', async (req, res) => {
     let data = req.body
     let result = await login(data);
     const loginuser = result.verify
-    console.log(loginuser)
     const token = result.token
     //check the returned result if its a object, only then can we welcome the user
     if (typeof loginuser == "object") { 
@@ -68,15 +67,12 @@ app.get('/login', async (req, res) => {
 //register user post request
 app.post('/registeruser', verifyToken, async (req, res)=>{
   let authorize = req.user.role //reading the token for authorisation
-  console.log(authorize)
   let data = req.body //requesting the data from body
   //checking the role of user
   if (authorize == "security" || authorize == "resident"){
     res.send("you do not have access to registering users!")
   }else if (authorize == "admin" ){
     const newUser = await registerUser(data)
-    //console.log(newUser)
-  
     if (newUser){
       res.send("Registration request processed, new user is " + newUser.name)
     }else{
@@ -131,10 +127,11 @@ app.delete('/deleteuser', verifyToken, async (req, res)=>{
 //register visitor POST request
 app.post('/registervisitor', verifyToken, async (req, res)=>{
   let authorize = req.user.role
+  let loginUser = req.user.user_id
   let data = req.body
   //checking if token is valid
   if(authorize){
-  const lmao = await registerVisitor(data)
+  const lmao = await registerVisitor(data, loginUser)
     if (lmao){
       res.send("Registration request processed, visitor is " + lmao.name)
     }else{
@@ -148,12 +145,13 @@ app.post('/registervisitor', verifyToken, async (req, res)=>{
 
 app.patch('/updatevisitor', verifyToken, async (req, res)=>{
   let authorize = req.user.role
+  let loginUser = req.user.user_id
   let data = req.body
   //checking if token is valid
   if(authorize){
-  const resultupdate = await updateVisitor(data)
+  const resultupdate = await updateVisitor(data,loginUser)
     if (resultupdate){
-      res.send("Visitor updated! " + resultupdate.value.name)
+      res.send("Visitor " + resultupdate.value.name + " has been updated :D!")
     }else{
       res.send("Error! Visitor does not exist!")
     }
@@ -166,9 +164,10 @@ app.patch('/updatevisitor', verifyToken, async (req, res)=>{
 app.delete('/deletevisitor', verifyToken, async (req, res)=>{
   let data = req.body
   let authorize = req.user.role
+  let loginUser = req.user.user_id
   //checking if token is valid
   if(authorize){
-  const lmao = await deleteVisitor(data)
+  const lmao = await deleteVisitor(data,loginUser)
     if (lmao.deletedCount == "1"){
       res.send("Goodbye " + lmao.name)
     }else{
@@ -184,7 +183,8 @@ app.get('/createQRvisitor', async (req, res)=>{
   let data = req.body
   const lmao = await qrCreate(data)
     if (lmao){
-      res.send("QR code created for visitor! " + lmao)
+      res.write("QR code created for visitor! Paste the link below into a browser :D\n")
+      res.end(lmao)
     }else{
       res.send("No such visitor found")
     }
@@ -265,35 +265,15 @@ app.patch('/checkOut', verifyToken, async (req, res)=>{
     res.send("Error! Please enter a valid role!")
     }
   }) 
-//bcrypt login function
-// async function login(data) {
-//   console.log("Alert! Alert! Someone is logging in!") //Display message to ensure function is called
-//   //Verify username is in the database
-//   let verify = await user.find({user_id : data.user_id}).next();
-//   if (verify){
 
-//     const match = await bcrypt.compare(data.password,verify.password);   
-//     console.log(match)
-//     if(match)
-//     {
-//       token = generateToken(verify)
-//       return{verify,token};
-//     }
-//     else
-//     {
-//         return "Wrong password"
-//     }
-//   }else{
-//     return ("Wrong user id D:")
-//   }
-//   }
 async function login(data) {
   console.log("Alert! Alert! Someone is logging in!") //Display message to ensure function is called
   //Verify username is in the database
   let verify = await user.find({user_id : data.user_id}).next();
   if (verify){
     //verify password is correct
-    if (verify.password == data.password){
+    const correctPassword = await bcrypt.compare(data.password,verify.password);
+    if (correctPassword){
       token = generateToken(verify)
       return{verify,token};
     }else{
@@ -309,26 +289,25 @@ async function registerUser(newdata) {
     if (match) {
       return 
     } else {
+      //encrypt password by hashing
+      const hashed = await encryption(newdata.password)
       // add info into database
-      
-      const hashh = await encryption(newdata.password)
-      console.log(hashh)
       await user.insertOne({
         "user_id": newdata.user_id,
-        "password": hashh,
+        "password": hashed,
         "name": newdata.name,
         "unit": newdata.unit,
         "hp_num" : newdata.hp_num,
         "role" : newdata.role
       })
-      const dataa=await user.find({user_id : newdata.user_id}).next()
-      //console.log(dataa)
-      return (dataa)
-      }}
+      const newUser=await user.find({user_id : newdata.user_id}).next()
+      return (newUser)
+}}
     
 async function updateUser(data) {
-
+  if (data.password){
   data.password = await encryption(data.password)
+  }
   result = await user.findOneAndUpdate({user_id : data.user_id},{$set : data}, {new: true})
   if(result){
     return (result)
@@ -339,16 +318,11 @@ async function updateUser(data) {
 
 async function deleteUser(data) {
   //verify if username is already in databse
-  const match = await user.find({user_id : data.user_id}).next()
-    if (match) {
-      success = await user.deleteOne({user_id : data.user_id})
-      return (success) // return success message
-    } else {
-      return
-      }  
-  }
+  success = await user.deleteOne({user_id : data.user_id})
+  return (success) // return success message
+}
 
-async function registerVisitor(newdata) {
+async function registerVisitor(newdata, currentUser) {
   //verify if there is duplciate ref_num
   const match = await visitor.find({"ref_num": newdata.ref}).next()
     if (match) {
@@ -365,32 +339,25 @@ async function registerVisitor(newdata) {
         "category" : newdata.category,
         "visit_date" : newdata.date,
         "unit" : newdata.unit,
-        "user_id" : newdata.user_id
+        "user_id" : currentUser
       })
           return (newdata)
     }  
 }
 
-async function updateVisitor(data) {
-  result = await visitor.findOneAndUpdate({ref_num : data.ref_num},{$set : data}, {new:true})
-  if(result){
-    return (result)
+async function updateVisitor(data, currentUser) {
+  result = await visitor.findOneAndUpdate({"ref_num": data.ref_num, "user_id" : currentUser },{$set : data}, {new:true})
+  if(result.value == null){
+    return 
   }else{
-    return
+    return (result)
   }
 }
 
-async function deleteVisitor(newdata) {
-  //verify if username is already in databse
-  const match = await visitor.find({ref_num : newdata.ref_num}).next()
-    if (match) {
-      const success  = await visitor.deleteOne({ref_num : newdata.ref_num})
-      return (success)
-    } else {
-      return
-      }  
-  }
-
+async function deleteVisitor(newdata, currentUser) {
+  const success  = await visitor.deleteOne({ref_num : newdata.ref_num})
+  return (success)
+}
 
 async function createLog(newdata) {
   //verify if there is duplicate log id
@@ -426,7 +393,7 @@ async function updateLog(newdata) {
   //function to read qrcode file
 async function qrRead(data) {
   //read the file
-  const buffer = await fs.readFileSync('./' + data.file);
+  const buffer = await fs.readFileSync("'./' + data.file");
   //read the buffer
   const image = await jimp.read(buffer);
   // Creating an instance of qrcode-reader module
@@ -452,19 +419,20 @@ async function qrRead(data) {
 
 //function to create qrcode file
 async function qrCreate(data){
-  console.log(data.IC_num)
   visitorData = await visitor.find({"IC_num" : data.IC_num}, {projection : {"ref_num" : 1 , "name" : 1 , "category" : 1 , "hp" : 1, "_id" : 0}}).next()
   if(visitorData){
     let stringdata = JSON.stringify(visitorData)
-    //create the file
-    qrCode_c.toFile(path.join('./visitorPass.png'), stringdata, (err)=>{
-      if (err) throw err;
-    });
-    return ("visitorPass.png")
-}else{
-  return
-}
+    //create the url to the qr code
+    // qrCode_c.toFile(path.join('./visitorPass.png'), stringdata, (err)=>{
+    //   if (err) throw err;
+    // });
+    const qrImage = await qrCode_c.toString(stringdata)
+    const base64 = await qrCode_c.toDataURL(stringdata)
+    return (qrImage)
+  }else{
+    return
   }
+}
 
 async function find_allvisitorlog(newdata){
   const match = await visitorLog.find({"log_id":{$eq : newdata.log_id}}).next()
