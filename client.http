@@ -19,33 +19,54 @@ Content-Type: application/json
 ###
 GET http://localhost:3000/finduser
 Content-Type: application/json 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDg3M2EyNDhjMGZmYzc5NGQ4ZGMxNzEiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6IiQyYiQxMCRmM1I0LklYc2l4aFRtcnlXOGVVYzEuM1cxRDVpMWEzd2xtSlNnSHBQdDlRY3Z3aWVlYUR5RyIsIm5hbWUiOiJyb2NrZXQiLCJ1bml0IjoibWFuYWdlbWVudCIsImhwX251bSI6IjMxMjMyIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjg2NjY0MzA5LCJleHAiOjE2ODY2NzE1MDl9.xEUNDZjR4PMiV9WBM-D6z-P2Iy3bK-2N-WGsOSOnSM4
+Authorization: Bearer 
 
 {
-    "user_id": "S2203"
+    "user_id": "R2769"
 }
 
 ###
 POST http://localhost:3000/registeruser
 Content-Type: application/json 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjU4MTA1NiwiZXhwIjoxNjg2NTg0NjU2fQ.KEPjam1Mszzo94zqhlJHRk-sjads_hxE8vRMQrp14wE
+Authorization: Bearer 
 
 {
-    "user_id": "S2203",
-    "password": "stellar",
-    "name": "suisei",
-    "unit": "security",
-    "hp_num" : "43165",
-    "role" : "security"
+    "user_id": "R5552",
+    "password": "NoPeeking",
+    "name": "NotAResident",
+    "unit": "T-420-10",
+    "hp_num" : "why are there alphabets in hp number",
+    "role" : "resident"
+}
+
+###
+PATCH http://localhost:3000/updateUser
+Content-Type: application/json
+Authorization: Bearer 
+
+{
+    "user_id": "R5552",
+    "name": "boyiboyiii",
+    "password" : "sheela9103i",
+    "unit": "T-7-5",
+    "hp_num": "0173902719"
+}
+
+###
+DELETE http://localhost:3000/deleteUser
+Content-Type: application/json 
+Authorization: Bearer 
+
+{
+    "user_id": "R5552"
 }
 
 ###
 POST http://localhost:3000/registervisitor
 Content-Type: application/json 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDg3M2EyNDhjMGZmYzc5NGQ4ZGMxNzEiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6IiQyYiQxMCRmM1I0LklYc2l4aFRtcnlXOGVVYzEuM1cxRDVpMWEzd2xtSlNnSHBQdDlRY3Z3aWVlYUR5RyIsIm5hbWUiOiJyb2NrZXQiLCJ1bml0IjoibWFuYWdlbWVudCIsImhwX251bSI6IjMxMjMyIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjg2NjYwMjU3LCJleHAiOjE2ODY2NjM4NTd9.mrMc0Sh7eun7GQzO3BqHR6AsbDmbGD38oW98D80jzTA
-
+Authorization: Bearer 
 {
-    "ref" : "6471121",
+    "ref" : "647112110",
     "name": "zenitsu",
     "IC_num": "111131-07-6121",
     "car_num": "UTeM 5555",
@@ -57,28 +78,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDg3M2EyN
 }
 
 ###
-GET http://localhost:3000/createQRvisitor
-Content-Type: application/json 
-
-{ 
-    "IC_num": "220131-07-4531"
-}
-
-###
-GET http://localhost:3000/readQRvisitor
-Content-Type: application/json 
-
-{ 
-    "file": "visitorPass.png"
-}
-
-###
 POST http://localhost:3000/checkIn
 Content-Type: application/json 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjU4MTA1NiwiZXhwIjoxNjg2NTg0NjU2fQ.KEPjam1Mszzo94zqhlJHRk-sjads_hxE8vRMQrp14wE
+Authorization: Bearer
 
 {
-    "log_id": "1",
+    "log_id": "3",
     "ref" : "672831021",
     "user_id" : "S2203"
 }
@@ -86,72 +91,56 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2N
 ###
 PATCH http://localhost:3000/checkOut
 Content-Type: application/json 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjM5NzY3NiwiZXhwIjoxNjg2NDAxMjc2fQ.Dpykyg6Or7mgic-RNkhQnMc0LoYDPFcgotc86WUvslg
+Authorization: Bearer 
 
 {
     "log_id": "1"
 }
 
 ###
-DELETE http://localhost:3000/deleteUser
+GET http://localhost:3000/findvisitor
 Content-Type: application/json 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjMyNDM2NSwiZXhwIjoxNjg2MzI3OTY1fQ.jeNUpJaajhFSJgpRkrNnZLVJTZudVKcyHxGJkZtiDS4
+Authorization: Bearer
 
 {
-    "user_id": "R5552"
+    "ref_num":"647112110"
 }
 
 ###
-DELETE http://localhost:3000/deleteVisitor
+GET http://localhost:3000/createQRvisitor
 Content-Type: application/json 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDg3M2EyNDhjMGZmYzc5NGQ4ZGMxNzEiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6IiQyYiQxMCRmM1I0LklYc2l4aFRtcnlXOGVVYzEuM1cxRDVpMWEzd2xtSlNnSHBQdDlRY3Z3aWVlYUR5RyIsIm5hbWUiOiJyb2NrZXQiLCJ1bml0IjoibWFuYWdlbWVudCIsImhwX251bSI6IjMxMjMyIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjg2NjYwMjU3LCJleHAiOjE2ODY2NjM4NTd9.mrMc0Sh7eun7GQzO3BqHR6AsbDmbGD38oW98D80jzTA
+Authorization: Bearer 
 
-{
-    "ref_num": "67283121"
-}
-
-###
-PATCH http://localhost:3000/updateUser
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDc0NjQ2NjdlMGU3M2UyMWRlNDBjNTYiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6Imx5bGEiLCJuYW1lIjoicm9ja2V0IiwidW5pdCI6Im1hbmFnZW1lbnQiLCJocF9udW0iOiIzMTIzMiIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTY4NjU4MTA1NiwiZXhwIjoxNjg2NTg0NjU2fQ.KEPjam1Mszzo94zqhlJHRk-sjads_hxE8vRMQrp14wE
-
-{
-    "user_id": "R5552",
-    "name": "boyiboyiii",
-    "password" : "sheela9103i",
-    "unit": "T-7-5",
-    "hp_num": "0173902719"
+{ 
+    "IC_num": "960417-07-0110"
 }
 
 ###
 PATCH http://localhost:3000/updateVisitor
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDg3M2EyNDhjMGZmYzc5NGQ4ZGMxNzEiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6IiQyYiQxMCRmM1I0LklYc2l4aFRtcnlXOGVVYzEuM1cxRDVpMWEzd2xtSlNnSHBQdDlRY3Z3aWVlYUR5RyIsIm5hbWUiOiJyb2NrZXQiLCJ1bml0IjoibWFuYWdlbWVudCIsImhwX251bSI6IjMxMjMyIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjg2NjYwMjU3LCJleHAiOjE2ODY2NjM4NTd9.mrMc0Sh7eun7GQzO3BqHR6AsbDmbGD38oW98D80jzTA
+Authorization: Bearer
 
 {
-    "ref_num": "6471121",
-    "IC_num": "030131-03-1810",
-    "unit": "T-7-5",
-    "hp": "0173902719",
-    "car_num": "VEH7013"
+    "ref_num": "615671031",
+    "IC_num": "891004-07-0110",
+    "hp": "01109876123",
+    "car_num": "WWW7777"
+}
+
+###
+DELETE http://localhost:3000/deleteVisitor
+Content-Type: application/json 
+Authorization: Bearer 
+
+{
+    "ref_num": "615671031"
 }
 
 ###
 GET http://localhost:3000/findvisitorlog
 Content-Type: application/json 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDg3M2EyNDhjMGZmYzc5NGQ4ZGMxNzEiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6IiQyYiQxMCRmM1I0LklYc2l4aFRtcnlXOGVVYzEuM1cxRDVpMWEzd2xtSlNnSHBQdDlRY3Z3aWVlYUR5RyIsIm5hbWUiOiJyb2NrZXQiLCJ1bml0IjoibWFuYWdlbWVudCIsImhwX251bSI6IjMxMjMyIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjg2NjYwMjU3LCJleHAiOjE2ODY2NjM4NTd9.mrMc0Sh7eun7GQzO3BqHR6AsbDmbGD38oW98D80jzTA
+Authorization: Bearer
 
 {
-
+    "log_id": "1"
 }
-
-###
-GET http://localhost:3000/findvisitor
-Content-Type: application/json 
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDg3M2EyNDhjMGZmYzc5NGQ4ZGMxNzEiLCJ1c2VyX2lkIjoiQTMxMDAiLCJwYXNzd29yZCI6IiQyYiQxMCRmM1I0LklYc2l4aFRtcnlXOGVVYzEuM1cxRDVpMWEzd2xtSlNnSHBQdDlRY3Z3aWVlYUR5RyIsIm5hbWUiOiJyb2NrZXQiLCJ1bml0IjoibWFuYWdlbWVudCIsImhwX251bSI6IjMxMjMyIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjg2NjY0MzA5LCJleHAiOjE2ODY2NzE1MDl9.xEUNDZjR4PMiV9WBM-D6z-P2Iy3bK-2N-WGsOSOnSM4
-
-{
-    "ref_num": "6471121"
-}
-
-#eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NDg3MzlmMjhjMGZmYzc5NGQ4ZGMxNzAiLCJ1c2VyX2lkIjoiUjI3NjkiLCJwYXNzd29yZCI6IiQyYiQxMCRaWEM4TVZaakFLbURKblFoYlVqMDN1eGpjcTRvS3g0LldaMjJvWUp5T0ZVWEt1U1RXSmZmSyIsIm5hbWUiOiJtdWRraXAiLCJ1bml0IjoiVC0xMy0yIiwiaHBfbnVtIjoiMjExMTEiLCJyb2xlIjoicmVzaWRlbnQiLCJpYXQiOjE2ODY2NjQyMjAsImV4cCI6MTY4NjY3MTQyMH0.gf9T3OVBq8my_bslfKua12OmFNrVCnM4jWOtMJ-7xo8

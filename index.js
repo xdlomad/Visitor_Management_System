@@ -1,10 +1,14 @@
+//libraries
 const express = require('express')
 const jwt = require('jsonwebtoken');
 
-//encryption variables
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
+//variables to define libaries
+const qrCode_c = require('qrcode');
+const app = express()
+const port = 3000
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = "mongodb+srv://b022110096:l8y6PQc3ylvAL1oe@firstdatabase.3xnid7z.mongodb.net/?retryWrites=true&w=majority";
 
@@ -17,37 +21,21 @@ const client = new MongoClient(uri, {
   }
 });
 
-//qrCode_creator variables
-const qrCode_c = require('qrcode');
-const path = require('path');
+//start of port
+client.connect() 
 
-//qrCode Reader variables
-const jimp = require("jimp");
-const fs = require('fs')
-const qrCode_r = require('qrcode-reader');
-const { send } = require('process');
-
-// Connect the client to the server	(optional starting in v4.7)
-client.connect();
-
-// Send a ping to confirm a successful connection
+//variables to define which collection used
 const user = client.db("Visitor_Management_v1").collection("users")
 const visitor = client.db("Visitor_Management_v1").collection("visitors")
 const visitorLog = client.db("Visitor_Management_v1").collection("visitor_log")
 
-//json express variables
-const app = express()
-const port = 3000
-
-//decode requests
+//decode of requests
 app.use(express.json());
-
-//start of port
+// connection to database
 app.listen(port, () => {
-  
   console.log(`Example app listening on port ${port}`)
-  
 })
+
 
 //login GET request
 app.get('/login', async (req, res) => {
@@ -58,30 +46,31 @@ app.get('/login', async (req, res) => {
     //check the returned result if its a object, only then can we welcome the user
     if (typeof loginuser == "object") { 
       res.write(loginuser.user_id + " has logged in!")
-      res.write("\nYour token : " + token)
-      res.end("\nWelcome "+ loginuser.name + "!")
+      res.write("\nWelcome "+ loginuser.name + "!")
+      res.end("\nYour token : " + token)
     }else {
       //else send the failure message
-      res.send(result)
+      res.send(errorMessage() + result)
     }
   });
 
+//find user GET request
 app.get('/finduser', verifyToken, async (req, res)=>{
   let authorize = req.user.role //reading the token for authorisation
   let data = req.body //requesting the data from body
   //checking the role of user
-  if (authorize == "resident"){
-    res.send("you do not have access to finding users!")
-  }else if (authorize == "admin" || authorize == "security" ){
-    const newUser = await findUser(data)
-    if (newUser){
+  if (authorize == "resident"|| authorize == "security"){
+    res.send(errorMessage() + "\nyou do not have access to finding users!")
+  }else if (authorize == "admin"){
+    const newUser = await findUser(data) //calling the function to find user
+    if (newUser){ //checking if user exist
       res.send(newUser)
     }else{
-      res.send("Error! User does not exist")
+      res.send(errorMessage() + "User does not exist sadly :[")
     }
   //token does not exist
   }else {
-      res.send("Token not valid!")
+      res.send(errorMessage() + "Token not valid!")
     }
   })
 
@@ -94,17 +83,18 @@ app.post('/registeruser', verifyToken, async (req, res)=>{
     res.send("you do not have access to registering users!")
   }else if (authorize == "admin" ){
     const newUser = await registerUser(data)
-    if (newUser){
+    if (newUser){ //checking is registration is succesful
       res.send("Registration request processed, new user is " + newUser.name)
     }else{
-      res.send("Error! User already exists!")
+      res.send(errorMessage() + "User already exists!")
     }
   //token does not exist
   }else {
-      res.send("Token not valid!")
+      res.send(errorMessage() + "Token not valid!")
     }
   })
 
+//update user PATCH request
 app.patch('/updateuser', verifyToken, async (req, res)=>{
   let authorize = req.user.role //reading the token for authorisation
   let data = req.body //requesting the data from body
@@ -113,13 +103,14 @@ app.patch('/updateuser', verifyToken, async (req, res)=>{
     res.send("you do not have access to update user information!")
   }else if (authorize == "admin" ){
     const result = await updateUser(data)
-    if (result){
+    if (result){ // checking if the user exist and updated
+      console.log(result)
       res.send("User updated! " + result.value.name)
     }else{
-      res.send("Error! User does not exist!")
+      res.send(errorMessage() + "User does not exist!")
     }
   }else {
-      res.send("Authorization and token is not found!")
+      res.send(errorMessage() + "Token is not found!")
     }
 })
 
@@ -134,12 +125,12 @@ app.delete('/deleteuser', verifyToken, async (req, res)=>{
     const lmao = await deleteUser(data)
     //checking if item is deleted
     if (lmao.deletedCount == "1"){
-      res.send("user deleted " + data.name)
+      res.send("user deleted " + data.user_id)
     }else{
-      res.send("Error! no user found!")
+      res.send(errorMessage() + "Cannot find the user to delete!")
     }
   }else {
-      res.send("Token not valid!")
+      res.send(errorMessage() + "Token not valid!")
     }
   }
 )
@@ -155,39 +146,41 @@ app.post('/registervisitor', verifyToken, async (req, res)=>{
     if (lmao){
       res.send("Registration request processed, visitor is " + lmao.name)
     }else{
-      res.send("Error! Visitor already exists!, Add a visit log instead!")
+      res.send(errorMessage() + "Visitor already exists! Add a visit log instead!")
     }
   }else {
-      res.send("Not a valid token!")
+      res.send(errorMessage() + "Not a valid token!")
     }
   }
 )
 
+//find visitor GET request
 app.get('/findvisitor', verifyToken, async (req, res)=>{
-  let authorize = req.user//reading the token for authorisation
+  let authorize = req.user//reading t he token for authorisation
   let data = req.body //requesting the data from body
   //checking the role of user
   if (authorize.role){
     const result = await findVisitor(data,authorize)
     res.send(result)
   }else{
-    res.send("Not a valid token!") 
+    res.send(errorMessage() + "Not a valid token!") 
   }
   })
 
+//update visitor PATCH request
 app.patch('/updatevisitor', verifyToken, async (req, res)=>{
   let authorize = req.user
   let data = req.body
   //checking if token is valid
   if(authorize.role){
-  const resultupdate = await updateVisitor(data,authorize)
+    const resultupdate = await updateVisitor(data,authorize)
     if (resultupdate){
       res.send("Visitor " + resultupdate.value.name + " has been updated :D!")
     }else{
-      res.send("Error! Visitor does not exist!")
+      res.send(errorMessage() + "Visitor does not exist!")
     }
   }else {
-      res.send("Not a valid token!")
+      res.send(errorMessage() + "Not a valid token!")
     }
 })
 
@@ -199,35 +192,30 @@ app.delete('/deletevisitor', verifyToken, async (req, res)=>{
   if(authorize.role){
   const deletedV = await deleteVisitor(data,authorize)
     if (deletedV.deletedCount == "1"){
-      res.send("Goodbye " + data.user_id)
+      res.send("Goodbye " + data.ref_num)
     }else{
-      res.send("Error! No such visitor found D: , perhaps you actually wished your ex visited?")
+      res.send(errorMessage() + "No such visitor found D: , perhaps you actually wished your ex visited?")
     }
   }else {
-      res.send("Not a valid token!")
+      res.send(errorMessage() + "Not a valid token!")
     }
   }
 )
 
-app.get('/createQRvisitor', async (req, res)=>{
+//create a qr code for visitor
+app.get('/createQRvisitor', verifyToken, async (req, res)=>{
   let data = req.body
-  const lmao = await qrCreate(data)
-    if (lmao){
+  let authorize = req.user
+  if (authorize.role){
+  const uri = await qrCreate(data)
+    if (uri){
       res.write("QR code created for visitor! Paste the link below into a browser :D\n")
-      res.end(lmao)
+      res.end(uri)
     }else{
-      res.send("No such visitor found")
+      res.send(errorMessage() + "No such visitor found")
     }
-  }
-)
-
-app.get('/readQRvisitor', async (req, res)=>{
-  let data = req.body
-  const visitorInfo = await qrRead(data)
-    if (visitorInfo){
-      res.send({message : "Visitor info :",visitorInfo})
-    }else{
-      res.send("QR code undefined")
+  }else {
+      res.send(errorMessage() + "Not a valid token!")
     }
   }
 )
@@ -240,23 +228,24 @@ app.post('/checkIn', verifyToken, async (req, res)=>{
   if (authorize == "security" || authorize == "admin"){
     const logData = await createLog(data)
     if (logData){
-      res.send({message : "Visitor Log Created!",logData})
+      res.send({message : "Visitor Log Created!", logData})
     }else{
-      res.send("Error! Log already exist!")
+      res.send(errorMessage() + "Duplicate Log! Might wanna find the admin")
     }
   }else if (authorize == "resident" ){
-    res.send("You do not have access to create visitor logs!")
+    res.send(errorMessage() + "You do not have access to create visitor logs!")
   }else{
-    res.send("token not valid D:")
+    res.send(errorMessage() + "token not valid D:")
     }
   })
 
+//find visitor log
 app.get('/findvisitorlog', verifyToken, async (req, res)=>{
     let authorize = req.user.role //reading the token for authorisation
     let data = req.body //requesting the data from body
     //checking the role of user
     if (authorize == "resident"){
-      res.send("you do not have access to registering users!")
+      res.send(errorMessage() + "you do not have access to registering users!")
     }
     else if (authorize == "security" || authorize == "admin"){
       const result = await findLog(data)
@@ -274,12 +263,12 @@ app.patch('/checkOut', verifyToken, async (req, res)=>{
     if (typeof logData == "object"){
       res.send( "Visitor succesfully checkout")
     }else{
-      res.send("Error! Could not find log :[")
+      res.send(errorMessage() + "Could not find log :[")
     }
   }else if (authorize == "resident" ){
     res.send("You do not have access to update visitor logs!")
   }else{
-    res.send("Error! Please enter a valid role!")
+    res.send(errorMessage() + "Please enter a valid role!")
     }
   })
 
@@ -295,15 +284,15 @@ async function login(data) {
       token = generateToken(verify)
       return{verify,token};
     }else{
-      return ("Wrong password D:")
+      return ("Wrong password D: Forgotten your password?")
     }
   }else{
-    return ("Wrong user id D:")
+    return ("No such user ID found D:")
 }}
 
 async function findUser(newdata) {
   //verify if there is duplicate username in databse
-  const match = await user.find({user_id : newdata.user_id}).next()
+  const match = await user.find({user_id : newdata.user_id},{projection: {password: 0, _id : 0}}).next()
   return (match)
 }
 
@@ -333,10 +322,10 @@ async function updateUser(data) {
   data.password = await encryption(data.password)
   }
   result = await user.findOneAndUpdate({user_id : data.user_id},{$set : data}, {new: true})
-  if(result){
-    return (result)
+  if(result.value == null){
+    return 
   }else{
-    return
+    return (result)
   }
 }
 
@@ -372,14 +361,14 @@ async function registerVisitor(newdata, currentUser) {
 async function findVisitor(newdata, currentUser){
   if (currentUser.role == "resident"){
     filter=Object.assign(newdata, {"user_id" : currentUser.user_id})
-    match = await visitor.find(filter).toArray()
+    match = await visitor.find(filter, {projection: {_id :0}}).toArray()
   }else if (currentUser.role == "security" || currentUser.role == "admin"){
     match = await visitor.find(newdata).toArray()
   }
   if (match.length != 0){
     return (match)
   } else{
-    return ("Error! Visitor does not exist !")
+    return (errorMessage() + "Visitor does not exist!")
   }
 }
 
@@ -413,7 +402,6 @@ async function createLog(newdata) {
     } else {
       // add info into database
       let dateTime = currentTime()
-      const log = 
       await visitorLog.insertOne({
         "log_id": newdata.log_id,
         "ref_num" : newdata.ref,
@@ -421,7 +409,8 @@ async function createLog(newdata) {
         "CheckOut_Time": "",
         "user_id" : newdata.user_id
       })
-          return (log)
+  const log = visitorLog.find({"log_id": newdata.log_id}).next()
+    return (log)
     }  
 }
 
@@ -429,38 +418,11 @@ async function updateLog(newdata) {
   //verify if username is already in databse
   let dateTime = currentTime()
   const newLog = await visitorLog.findOneAndUpdate({"log_id": newdata.log_id},{$set : {CheckOut_Time: dateTime}})
-    if (newLog) {
-      return (newLog)
+    if (newLog.value == null) {
+      return 
     } else {
-          return
+        return (newLog)
     }  
-}
-
-  //function to read qrcode file
-async function qrRead(data) {
-  //read the file
-  const buffer = await fs.readFileSync("'./' + data.file");
-  //read the buffer
-  const image = await jimp.read(buffer);
-  // Creating an instance of qrcode-reader module
-  const qr = new qrCode_r();
-  //wait for promise to resolve
-  final =""
-  qr.callback = function (err, value) {
-    if (err) {
-        console.error(err);
-    }
-    // Let result equal final
-    final = value.result
-  };
-  // Decoding the QR code
-  qr.decode(image.bitmap);
-  //return the read data
-  if (final){
-    return JSON.parse(final)
-  }else {
-    return
-  }
 }
 
 //function to create qrcode file
@@ -468,42 +430,41 @@ async function qrCreate(data){
   visitorData = await visitor.find({"IC_num" : data.IC_num}, {projection : {"ref_num" : 1 , "name" : 1 , "category" : 1 , "hp" : 1, "_id" : 0}}).next()
   if(visitorData){
     let stringdata = JSON.stringify(visitorData)
-    //create the url to the qr code
-    // qrCode_c.toFile(path.join('./visitorPass.png'), stringdata, (err)=>{
-    //   if (err) throw err;
-    // });
-    const qrImage = await qrCode_c.toString(stringdata)
     const base64 = await qrCode_c.toDataURL(stringdata)
-    return (qrImage)
+    return (base64)
   }else{
     return
   }
 }
 
+//find visitor logs
 async function findLog(newdata){
   const match = await visitorLog.find(newdata).toArray()
   if (match.length != 0){
     return (match)
   } else{
-    return ("Error! Visitor log does not exist !")
+    return (errorMessage() + "Visitor log does not exist !")
   }
 }
 
+// to get the current time 
 function currentTime(){
   const today = new Date().toLocaleString("en-US", {timeZone: "singapore"})
   return today
 }
 
+//generate token for login authentication
 function generateToken(loginProfile){
-  return jwt.sign(loginProfile, 'very_long_long_long_long_numbers_alphabets_lmao_stillgoing_password', { expiresIn: '2h' });
+  return jwt.sign(loginProfile, 'UltimateSuperMegaTitanicBombasticGreatestBestPOGMadSuperiorTheOneandOnlySensationalSecretPassword', { expiresIn: '1h' });
 }
 
+//verify generated tokens
 function verifyToken(req, res, next){
   let header = req.headers.authorization
   let token = header.split(' ')[1] //checking header
-  jwt.verify(token,'very_long_long_long_long_numbers_alphabets_lmao_stillgoing_password',function(err,decoded){
+  jwt.verify(token,'UltimateSuperMegaTitanicBombasticGreatestBestPOGMadSuperiorTheOneandOnlySensationalSecretPassword',function(err,decoded){
     if(err) {
-      res.send("invalid token")
+      res.send(errorMessage() + "Token is not valid D:, go to the counter to exchange")
     }
     req.user = decoded // bar
 
@@ -511,9 +472,29 @@ function verifyToken(req, res, next){
   });
 }
 
+//bcrypt functions to generate a hashed password
 async function encryption(data){
   const salt= await bcrypt.genSalt(saltRounds)
   const hashh = await bcrypt.hash(data,salt)
   return hashh
+}
+
+function errorMessage(){
+  const x = Math.floor(Math.random()*6)
+  if (x == 0){
+    return ("Oopsie Daisy\n")
+  }else if (x == 1){
+    return ("Error! Error! Error!\n")
+  }else if (x==2){
+    return ("I can accept failure. Everyone fails at something. But I can't accept not trying. ― Michael Jordan\n")
+  }else if (x==3){
+    return ("Waoh how did you even get an error here?\n")
+  }else if (x==4){
+    return ("Something went wrong! FeelsBadMan\n")
+  }else if (x==5){
+    return ("Hi, I'm Error Man , I'm here to tell you\n")
+  }else{
+    return ("Oi bo- Sir/Madam, we seem to have an error\n")
+  }
 }
 
