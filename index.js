@@ -104,7 +104,6 @@ app.patch('/updateuser', verifyToken, async (req, res)=>{
   }else if (authorize == "admin" ){
     const result = await updateUser(data)
     if (result){ // checking if the user exist and updated
-      console.log(result)
       res.send("User updated! " + result.value.name)
     }else{
       res.send(errorMessage() + "User does not exist!")
@@ -122,9 +121,9 @@ app.delete('/deleteuser', verifyToken, async (req, res)=>{
   if (authorize == "security" || authorize == "resident"){
     res.send("you do not have access to registering users!")
   }else if (authorize == "admin" ){
-    const lmao = await deleteUser(data)
+    const result = await deleteUser(data)
     //checking if item is deleted
-    if (lmao.deletedCount == "1"){
+    if (result.deletedCount == "1"){
       res.send("user deleted " + data.user_id)
     }else{
       res.send(errorMessage() + "Cannot find the user to delete!")
@@ -142,9 +141,9 @@ app.post('/registervisitor', verifyToken, async (req, res)=>{
   let data = req.body
   //checking if token is valid
   if(authorize){
-  const lmao = await registerVisitor(data, loginUser)
-    if (lmao){
-      res.send("Registration request processed, visitor is " + lmao.name)
+  const visitorData = await registerVisitor(data, loginUser) //register visitor
+    if (visitorData){
+      res.send("Registration request processed, visitor is " + visitorData.name)
     }else{
       res.send(errorMessage() + "Visitor already exists! Add a visit log instead!")
     }
@@ -156,11 +155,11 @@ app.post('/registervisitor', verifyToken, async (req, res)=>{
 
 //find visitor GET request
 app.get('/findvisitor', verifyToken, async (req, res)=>{
-  let authorize = req.user//reading t he token for authorisation
+  let authorize = req.user//reading the token for authorisation
   let data = req.body //requesting the data from body
   //checking the role of user
   if (authorize.role){
-    const result = await findVisitor(data,authorize)
+    const result = await findVisitor(data,authorize) //find visitor
     res.send(result)
   }else{
     res.send(errorMessage() + "Not a valid token!") 
@@ -173,9 +172,9 @@ app.patch('/updatevisitor', verifyToken, async (req, res)=>{
   let data = req.body
   //checking if token is valid
   if(authorize.role){
-    const resultupdate = await updateVisitor(data,authorize)
-    if (resultupdate){
-      res.send("Visitor " + resultupdate.value.name + " has been updated :D!")
+    const result = await updateVisitor(data,authorize) // update visitor
+    if (result){
+      res.send("Visitor " + result.value.user_id + " has been updated :D!")
     }else{
       res.send(errorMessage() + "Visitor does not exist!")
     }
@@ -190,9 +189,9 @@ app.delete('/deletevisitor', verifyToken, async (req, res)=>{
   let authorize = req.user
   //checking if token is valid
   if(authorize.role){
-  const deletedV = await deleteVisitor(data,authorize)
+  const deletedV = await deleteVisitor(data,authorize) //delete visitor
     if (deletedV.deletedCount == "1"){
-      res.send("Goodbye " + data.ref_num)
+      res.send("The visitor under reference number of " + data.ref_num + " has been deleted :D!")
     }else{
       res.send(errorMessage() + "No such visitor found D: , perhaps you actually wished your ex visited?")
     }
@@ -206,8 +205,8 @@ app.delete('/deletevisitor', verifyToken, async (req, res)=>{
 app.get('/createQRvisitor', verifyToken, async (req, res)=>{
   let data = req.body
   let authorize = req.user
-  if (authorize.role){
-  const uri = await qrCreate(data)
+  if (authorize.role){ //checking if token is valid
+  const uri = await qrCreate(data) //create qr code
     if (uri){
       res.write("QR code created for visitor! Paste the link below into a browser :D\n")
       res.end(uri)
@@ -225,8 +224,8 @@ app.post('/checkIn', verifyToken, async (req, res)=>{
   let data = req.body
   let authorize = req.user.role
   //checking role of users
-  if (authorize == "security" || authorize == "admin"){
-    const logData = await createLog(data)
+  if (authorize == "security" || authorize == "admin"){ //roles that can create visitor logs
+    const logData = await createLog(data) //create logs
     if (logData){
       res.send({message : "Visitor Log Created!", logData})
     }else{
@@ -248,7 +247,7 @@ app.get('/findvisitorlog', verifyToken, async (req, res)=>{
       res.send(errorMessage() + "you do not have access to registering users!")
     }
     else if (authorize == "security" || authorize == "admin"){
-      const result = await findLog(data)
+      const result = await findLog(data) //find logs
       res.send(result)
     }
   }
@@ -258,7 +257,7 @@ app.get('/findvisitorlog', verifyToken, async (req, res)=>{
 app.patch('/checkOut', verifyToken, async (req, res)=>{
   let data = req.body
   let authorize = req.user.role
-  if (authorize == "security" || authorize == "admin"){
+  if (authorize == "security" || authorize == "admin"){ //check roles that can update visitor logs
     const logData = await updateLog(data)
     if (typeof logData == "object"){
       res.send( "Visitor succesfully checkout")
@@ -319,10 +318,10 @@ async function registerUser(newdata) {
     
 async function updateUser(data) {
   if (data.password){
-  data.password = await encryption(data.password)
+  data.password = await encryption(data.password) //encrypt the password
   }
   result = await user.findOneAndUpdate({user_id : data.user_id},{$set : data}, {new: true})
-  if(result.value == null){
+  if(result.value == null){ //check if user exist
     return 
   }else{
     return (result)
@@ -330,7 +329,7 @@ async function updateUser(data) {
 }
 
 async function deleteUser(data) {
-  //verify if username is already in databse
+  //delete user from database
   success = await user.deleteOne({user_id : data.user_id})
   return (success) // return success message
 }
@@ -360,12 +359,12 @@ async function registerVisitor(newdata, currentUser) {
 
 async function findVisitor(newdata, currentUser){
   if (currentUser.role == "resident"){
-    filter=Object.assign(newdata, {"user_id" : currentUser.user_id})
+    filter=Object.assign(newdata, {"user_id" : currentUser.user_id}) // only allow resident to find their own visitors
     match = await visitor.find(filter, {projection: {_id :0}}).toArray()
-  }else if (currentUser.role == "security" || currentUser.role == "admin"){
+  }else if (currentUser.role == "security" || currentUser.role == "admin"){ // allow security and admin to find all visitors
     match = await visitor.find(newdata).toArray()
   }
-  if (match.length != 0){
+  if (match.length != 0){ //check if there is any visitor
     return (match)
   } else{
     return (errorMessage() + "Visitor does not exist!")
@@ -373,12 +372,12 @@ async function findVisitor(newdata, currentUser){
 }
 
 async function updateVisitor(data, currentUser) {
-  if (currentUser.role == "resident"|| currentUser.role == "security"){
+  if (currentUser.role == "resident"|| currentUser.role == "security"){ //only allow resident and security to update their own visitors
     result = await visitor.findOneAndUpdate({"ref_num": data.ref_num, "user_id" : currentUser.user_id },{$set : data}, {new:true})
   }else if (currentUser.role == "admin"){
-    result = await visitor.findOneAndUpdate({"ref_num": data.ref_num},{$set : data}, {new:true})
+    result = await visitor.findOneAndUpdate({"ref_num": data.ref_num},{$set : data}, {new:true}) //allow admin to update all visitors
   }
-  if(result.value == null){
+  if(result.value == null){ //check if visitor exist
     return 
   }else{
     return (result)
@@ -386,12 +385,12 @@ async function updateVisitor(data, currentUser) {
 }
 
 async function deleteVisitor(newdata, currentUser) {
-  if (currentUser.role == "resident"|| currentUser.role == "security"){
+  if (currentUser.role == "resident"|| currentUser.role == "security"){ //only allow resident and security to delete their own visitors
     success  = await visitor.deleteOne({ref_num : newdata.ref_num, user_id : currentUser.user_id})
-  }else if (currentUser.role == "admin"){
+  }else if (currentUser.role == "admin"){ //allow admin to delete all visitors
     success  = await visitor.deleteOne({ref_num : newdata.ref_num})
   }
-  return (success)
+  return (success) // return success message
 }
 
 async function createLog(newdata) {
@@ -417,8 +416,8 @@ async function createLog(newdata) {
 async function updateLog(newdata) {
   //verify if username is already in databse
   let dateTime = currentTime()
-  const newLog = await visitorLog.findOneAndUpdate({"log_id": newdata.log_id},{$set : {CheckOut_Time: dateTime}})
-    if (newLog.value == null) {
+  const newLog = await visitorLog.findOneAndUpdate({"log_id": newdata.log_id},{$set : {CheckOut_Time: dateTime}}) //update the checkout time
+    if (newLog.value == null) { //check if log exist
       return 
     } else {
         return (newLog)
@@ -427,10 +426,10 @@ async function updateLog(newdata) {
 
 //function to create qrcode file
 async function qrCreate(data){
-  visitorData = await visitor.find({"IC_num" : data.IC_num}, {projection : {"ref_num" : 1 , "name" : 1 , "category" : 1 , "hp" : 1, "_id" : 0}}).next()
-  if(visitorData){
+  visitorData = await visitor.find({"IC_num" : data.IC_num}, {projection : {"ref_num" : 1 , "name" : 1 , "category" : 1 , "hp" : 1, "_id" : 0}}).next() //find visitor data
+  if(visitorData){ //check if visitor exist
     let stringdata = JSON.stringify(visitorData)
-    const base64 = await qrCode_c.toDataURL(stringdata)
+    const base64 = await qrCode_c.toDataURL(stringdata) //convert to qr code to data url
     return (base64)
   }else{
     return
@@ -439,9 +438,9 @@ async function qrCreate(data){
 
 //find visitor logs
 async function findLog(newdata){
-  const match = await visitorLog.find(newdata).toArray()
-  if (match.length != 0){
-    return (match)
+  const match = await visitorLog.find(newdata).toArray() //find logs
+  if (match.length != 0){   //check if there is any log
+    return (match) 
   } else{
     return (errorMessage() + "Visitor log does not exist !")
   }
@@ -449,7 +448,7 @@ async function findLog(newdata){
 
 // to get the current time 
 function currentTime(){
-  const today = new Date().toLocaleString("en-US", {timeZone: "singapore"})
+  const today = new Date().toLocaleString("en-US", {timeZone: "singapore"}) 
   return today
 }
 

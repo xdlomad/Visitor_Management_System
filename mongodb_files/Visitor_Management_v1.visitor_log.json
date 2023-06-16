@@ -1,10 +1,30 @@
 [{
   "_id": {
-    "$oid": "64872f6c7da83fb9017cc85a"
+    "$oid": "648b22cc1befa2919198a7d9"
   },
-  "log_id": "1",
+  "log_id": "3",
   "ref_num": "672831021",
-  "CheckIn_Time": "6/12/2023, 10:45:00 PM",
+  "CheckIn_Time": "6/15/2023, 10:40:12 PM",
   "CheckOut_Time": "",
   "user_id": "S2203"
+},
+{
+  "_id": {
+    "$oid": "648b233a6c34586d895c75bb"
+  },
+  "log_id": "2",
+  "ref_num": "672831021",
+  "CheckIn_Time": "4/11/2023, 11:11:11 PM",
+  "CheckOut_Time": "4/11/2023, 12:12:12 PM",
+  "user_id": "S2203"
+},
+{
+  "_id": {
+    "$oid": "648b238c6c34586d895c75bc"
+  },
+  "log_id": "1",
+  "ref_num": "689532221",
+  "CheckIn_Time": "14/01/2021, 09:56:11 PM",
+  "CheckOut_Time": "14/01/2021, 10:30:12 PM",
+  "user_id": "S1103"
 }]

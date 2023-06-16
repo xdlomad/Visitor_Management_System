@@ -1,0 +1,1 @@
+res.send(errorMessage() + "Token is not valid D:, go to the counter to exchange")

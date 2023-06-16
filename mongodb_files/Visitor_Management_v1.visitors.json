@@ -1,30 +1,30 @@
 [{
   "_id": {
-    "$oid": "6487411eb79492d3d8b4ed71"
-  },
-  "ref_num": "6471121",
-  "name": "zenitsu",
-  "IC_num": "111131-07-6121",
-  "car_num": "UTeM 5555",
-  "hp": "012-61942211",
-  "pass": "DELIVERY_0A",
-  "category": "DELIVERY",
-  "visit_date": "2023-06-30",
-  "unit": "T-7-4",
-  "user_id": "A3100"
-},
-{
-  "_id": {
     "$oid": "6475eb1b688a3fd960fc0271"
   },
   "ref_num": "672831021",
   "name": "Megaman",
-  "IC_num": "220131-07-4531",
-  "car_num": "UTeM 1234",
-  "hp": "012-2131231",
+  "IC_num": "030131-03-1810",
+  "car_num": "VEH7013",
+  "hp": "0173902719",
   "pass": "VISITOR-0A",
   "category": "VISITOR",
   "visit_date": "2023-06-21",
-  "unit": "T-3-1",
-  "user_id": "R0711"
+  "unit": "T-7-5",
+  "user_id": "R2769"
+},
+{
+  "_id": {
+    "$oid": "648b21076c34586d895c75ae"
+  },
+  "ref_num": "615671031",
+  "name": "Xiao Long Bao",
+  "IC_num": "960417-07-0110",
+  "car_num": "VPO7013",
+  "hp": "0183731054",
+  "pass": "CONSTRUCTION-B",
+  "category": "CONTRACTOR",
+  "visit_date": "2023-06-21",
+  "unit": "PARKING LOT A",
+  "user_id": "A3100"
 }]

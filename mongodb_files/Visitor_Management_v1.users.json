@@ -1,16 +1,5 @@
 [{
   "_id": {
-    "$oid": "6487397865706a004faebfae"
-  },
-  "user_id": "R5552",
-  "password": "$2b$10$TYuYsrN5F9Y1v7WVAh2M5.KrAzgE1hXXxISsuGV4q/YqWNxaekk.O",
-  "name": "boyiboyiii",
-  "unit": "T-7-5",
-  "hp_num": "0173902719",
-  "role": "resident"
-},
-{
-  "_id": {
     "$oid": "648739f28c0ffc794d8dc170"
   },
   "user_id": "R2769",
@@ -33,10 +22,10 @@
 },
 {
   "_id": {
-    "$oid": "64873a4d8c0ffc794d8dc172"
+    "$oid": "648b0135a5f274d82149a965"
   },
   "user_id": "S2203",
-  "password": "$2b$10$r2p7.kVaD3ujPmHsZGGAHu1FLSfALKGgCl13NsWhWJkeyWze3pI0.",
+  "password": "$2b$10$y6cdSqHOql9X8SLHuSR6BOG/DeXNPNj8ZNDggTwj.6V53g2EKrLk6",
   "name": "suisei",
   "unit": "security",
   "hp_num": "43165",

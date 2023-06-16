@@ -65,6 +65,7 @@ Authorization: Bearer
 POST http://localhost:3000/registervisitor
 Content-Type: application/json 
 Authorization: Bearer 
+
 {
     "ref" : "647112110",
     "name": "zenitsu",
