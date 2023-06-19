@@ -190,7 +190,7 @@ app.delete('/deletevisitor', verifyToken, async (req, res)=>{
   //checking if token is valid
   if(authorize.role){
   const deletedV = await deleteVisitor(data,authorize) //delete visitor
-    if (deletedV.deletedCount == "1"){
+    if (deletedV.deletedCount == "1"){ //check for successful delete
       res.send("The visitor under reference number of " + data.ref_num + " has been deleted :D!")
     }else{
       res.send(errorMessage() + "No such visitor found D: , perhaps you actually wished your ex visited?")
@@ -220,12 +220,13 @@ app.get('/createQRvisitor', verifyToken, async (req, res)=>{
 )
 
 //create a visitor log
-app.post('/checkIn', verifyToken, async (req, res)=>{
+app.post('/checkIn', verifyToken, async (req, res,err)=>{
   let data = req.body
   let authorize = req.user.role
   //checking role of users
-  if (authorize == "security" || authorize == "admin"){ //roles that can create visitor logs
-    const logData = await createLog(data) //create logs
+  if (authorize == "security" || authorize == "admin")
+  { //roles that can create visitor logs
+    const logData = await createLog(data,req.user) //create logs
     if (logData){
       res.send({message : "Visitor Log Created!", logData})
     }else{
@@ -259,7 +260,7 @@ app.patch('/checkOut', verifyToken, async (req, res)=>{
   let authorize = req.user.role
   if (authorize == "security" || authorize == "admin"){ //check roles that can update visitor logs
     const logData = await updateLog(data)
-    if (typeof logData == "object"){
+    if (typeof logData == "object"){ //if returned data is object, means log is updated
       res.send( "Visitor succesfully checkout")
     }else{
       res.send(errorMessage() + "Could not find log :[")
@@ -393,7 +394,7 @@ async function deleteVisitor(newdata, currentUser) {
   return (success) // return success message
 }
 
-async function createLog(newdata) {
+async function createLog(newdata,currentUser) {
   //verify if there is duplicate log id
   const match = await visitorLog.find({"log_id": newdata.log_id}).next()
     if (match) {
@@ -406,9 +407,9 @@ async function createLog(newdata) {
         "ref_num" : newdata.ref,
         "CheckIn_Time": dateTime,
         "CheckOut_Time": "",
-        "user_id" : newdata.user_id
+        "user_id" : currentUser.user_id
       })
-  const log = visitorLog.find({"log_id": newdata.log_id}).next()
+  const log = visitorLog.find({"log_id": newdata.log_id}, {projection :{_id : 0 }}).next()
     return (log)
     }  
 }
@@ -438,7 +439,7 @@ async function qrCreate(data){
 
 //find visitor logs
 async function findLog(newdata){
-  const match = await visitorLog.find(newdata).toArray() //find logs
+  const match = await visitorLog.find(newdata, {projection: {"_id":0}}).toArray() //find logs
   if (match.length != 0){   //check if there is any log
     return (match) 
   } else{
@@ -463,7 +464,8 @@ function verifyToken(req, res, next){
   let token = header.split(' ')[1] //checking header
   jwt.verify(token,'UltimateSuperMegaTitanicBombasticGreatestBestPOGMadSuperiorTheOneandOnlySensationalSecretPassword',function(err,decoded){
     if(err) {
-      res.send(errorMessage() + "Token is not valid D:, go to the counter to exchange")
+      res.send(errorMessage() + "Token is not valid D:, go to the counter to exchange (joke)")
+      return
     }
     req.user = decoded // bar
 
@@ -478,6 +480,7 @@ async function encryption(data){
   return hashh
 }
 
+//error message generator
 function errorMessage(){
   const x = Math.floor(Math.random()*6)
   if (x == 0){

@@ -35,7 +35,7 @@ Authorization: Bearer
     "password": "NoPeeking",
     "name": "NotAResident",
     "unit": "T-420-10",
-    "hp_num" : "why are there alphabets in hp number",
+    "hp_num" : "012-61945211",
     "role" : "resident"
 }
 
@@ -81,12 +81,11 @@ Authorization: Bearer
 ###
 POST http://localhost:3000/checkIn
 Content-Type: application/json 
-Authorization: Bearer
+Authorization: Bearer 
 
 {
     "log_id": "3",
-    "ref" : "672831021",
-    "user_id" : "S2203"
+    "ref" : "672831021"
 }
 
 ###
@@ -101,7 +100,7 @@ Authorization: Bearer
 ###
 GET http://localhost:3000/findvisitor
 Content-Type: application/json 
-Authorization: Bearer
+Authorization: Bearer 
 
 {
     "ref_num":"647112110"
@@ -119,7 +118,7 @@ Authorization: Bearer
 ###
 PATCH http://localhost:3000/updateVisitor
 Content-Type: application/json
-Authorization: Bearer
+Authorization: Bearer 
 
 {
     "ref_num": "615671031",
@@ -140,7 +139,7 @@ Authorization: Bearer
 ###
 GET http://localhost:3000/findvisitorlog
 Content-Type: application/json 
-Authorization: Bearer
+Authorization: Bearer 
 
 {
     "log_id": "1"
