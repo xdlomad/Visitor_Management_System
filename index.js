@@ -8,7 +8,7 @@ const saltRounds = 10;
 //variables to define libaries
 const qrCode_c = require('qrcode');
 const app = express()
-const port = 3000
+const port = process.env.PORT || 1337
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = "mongodb+srv://b022110096:l8y6PQc3ylvAL1oe@firstdatabase.3xnid7z.mongodb.net/?retryWrites=true&w=majority";
 
